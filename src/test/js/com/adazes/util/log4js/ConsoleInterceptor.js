@@ -58,6 +58,8 @@ var ConsoleInterceptor = function() {
 		return lm;
 	}
 
+	this.resetMessage = function() { lastMessage = null }
+
 	init();
 };
 

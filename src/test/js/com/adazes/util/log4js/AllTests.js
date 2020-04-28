@@ -15,7 +15,7 @@ var logger4NodeWithNameWithTimeStamp = new Logger4Node(INFO_TEST_LOGGER_NAME, Le
 var logger4NodeWithLevelIndicator = new Logger4Node(ALL_TESTS_LOGGER_NAME, Level.ALL, false, true, true, true);
 var loggerWithLevelIndicator = new Logger(ALL_TESTS_LOGGER_NAME, Level.ALL, false, false, true, true);
 var loggerWithTimestamp = new Logger(ALL_TESTS_LOGGER_NAME, Level.DEBUG, false, false, true);
-var loggerWithFullPrefix = new Logger(FULL_PREFIX_TEST_LOGGER_NAME, Level.DEBUG, false, false, false, true);
+var loggerWithFullPrefix = new Logger(FULL_PREFIX_TEST_LOGGER_NAME, Level.ALL, false, false, false, true);
 var logger = new Logger(ALL_TESTS_LOGGER_NAME, Level.INFO, true);
 
 let consoleInterceptor = new ConsoleInterceptor();
@@ -28,7 +28,7 @@ var TEST_INPUT_OUTPUT = [
 	"All test with Logger4Node with level indicator",
 	"All test with Logger with timestamp & level indicator",
 	"All test with Logger with timestamp",
-	"All test with named Logger with timestamp, & level indicator",
+	"All test with named Logger with timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional"
 	]
 ;
@@ -98,6 +98,7 @@ for (var i = 0; i < TEST_INPUT_OUTPUT.length; i++) {
 		logger4Node.warn(f.expected);
 		logger4Node.warn("\t=== output: ===");
 		logger4Node.warn(f.output);
+		consoleInterceptor.resetMessage();
 //		logger4Node.log(input);
 	}
 	Logger4Node.cursor.reset();
