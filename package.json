@@ -1,0 +1,27 @@
+{
+  "name": "log4js",
+  "version": "1.0.0",
+  "description": "a Logger implementation for JS (inspired by log4j)",
+  "main": "src/main/js/index.js",
+  "scripts": {
+    "test": "node -r esm src/test/js/com/adazes/util/log4js/AllTests"
+  },
+  "keywords": [
+    "log",
+    "logging",
+    "log4js",
+    "log4j",
+    "console",
+    "stdout",
+    "stderr"
+  ],
+  "author": "Reşat SABIQ",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "rollup-plugin-uglify": "^6.0.4",
+    "rollup": "^2.7.1"
+  }
+}

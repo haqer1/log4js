@@ -1,0 +1,304 @@
+/**
+ * Logging level constants.
+ */
+let Level = {};
+Object.defineProperty(Level, "OFF", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.OFF, "ordinal", {
+	value: 0,
+	writable: false
+});
+Object.defineProperty(Level.OFF, "name", {
+	value: "OFF",
+	writable: false
+});
+Object.defineProperty(Level.OFF, "abbreviation", {
+	value: Level.OFF.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "FATAL", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.FATAL, "ordinal", {
+	value: 100,
+	writable: false
+});
+Object.defineProperty(Level.FATAL, "name", {
+	value: "FATAL",
+	writable: false
+});
+Object.defineProperty(Level.FATAL, "abbreviation", {
+	value: Level.FATAL.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "ERROR", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.ERROR, "ordinal", {
+	value: 200,
+	writable: false
+});
+Object.defineProperty(Level.ERROR, "name", {
+	value: "ERROR",
+	writable: false
+});
+Object.defineProperty(Level.ERROR, "abbreviation", {
+	value: Level.ERROR.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "WARN", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.WARN, "ordinal", {
+	value: 300,
+	writable: false
+});
+Object.defineProperty(Level.WARN, "name", {
+	value: "WARN",
+	writable: false
+});
+Object.defineProperty(Level.WARN, "abbreviation", {
+	value: Level.WARN.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "INFO", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.INFO, "ordinal", {
+	value: 400,
+	writable: false
+});
+Object.defineProperty(Level.INFO, "name", {
+	value: "INFO",
+	writable: false
+});
+Object.defineProperty(Level.INFO, "abbreviation", {
+	value: Level.INFO.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "DEBUG", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.DEBUG, "ordinal", {
+	value: 500,
+	writable: false
+});
+Object.defineProperty(Level.DEBUG, "name", {
+	value: "DEBUG",
+	writable: false
+});
+Object.defineProperty(Level.DEBUG, "abbreviation", {
+	value: Level.DEBUG.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "TRACE", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.TRACE, "ordinal", {
+	value: 600,
+	writable: false
+});
+Object.defineProperty(Level.TRACE, "name", {
+	value: "TRACE",
+	writable: false
+});
+Object.defineProperty(Level.TRACE, "abbreviation", {
+	value: Level.TRACE.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "ALL", {
+	value: {},
+	writable: false
+});
+Object.defineProperty(Level.ALL, "ordinal", {
+	value: 700,
+	writable: false
+});
+Object.defineProperty(Level.ALL, "name", {
+	value: "ALL",
+	writable: false
+});
+Object.defineProperty(Level.ALL, "abbreviation", {
+	value: Level.ALL.name.charAt(0),
+	writable: false
+});
+Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
+	value: [Level.OFF, Level.FATAL, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL],
+	writable: false
+});
+
+/**
+ * Logs to navigator console, using level-specific methods. Use level-checks to log conditionally.
+ * 
+ * @param	isim		Logger name
+ * @param	loggingLevel	Logging level
+ * @param	skipTimestamp	Optional boolean to skip prepending timestamp
+ */
+let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
+
+	var level = loggingLevel ? loggingLevel : Level.INFO;
+	var errorUsable = console.error ? true : false;
+	// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
+	var formatter = typeof navigator == "object" ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
+		  year: 'numeric', month: 'numeric', day: 'numeric',
+		  hour: 'numeric', minute: 'numeric', second: 'numeric',
+		  hour12: false
+		}) : undefined;
+
+	/**
+	 * @param	text	message to log
+	 * @param	level	level to prefix to the message
+	 */
+	this.log = function(text, level) {
+		if (level != Level.OFF) {
+			var mesaj;
+			let nameOrTimestamp = !skipName || !skipTimestamp
+			if (!skipPrefix && prependLevelAbbreviation ) {
+				mesaj = level.abbreviation;
+				mesaj += '>'; 
+			}
+			if (!skipPrefix && !skipName)
+				mesaj = mesaj ? mesaj+ ' ' +isim : isim;
+			if (!skipPrefix && !skipTimestamp) {
+				var date = new Date();
+				let parenthesesUsed;
+				if (mesaj)
+					mesaj += ' ';
+				if (!skipName) {
+					mesaj += '(';
+					parenthesesUsed = true;
+				}
+				if (!mesaj)
+					mesaj = '';
+				// date.toXYZ: Used to be targeting IE 9, now for esm
+				mesaj += formatter ? formatter.format(date) : date.toLocaleDateString()+ ", " +date.toLocaleTimeString();
+				if (parenthesesUsed)
+					mesaj += ')';
+			}
+			if (mesaj) {
+				if (nameOrTimestamp)
+					mesaj += ':';
+				mesaj += ' ' +text;
+			} else
+				mesaj = text;
+	//		var levelPrefix;
+			var fn;
+			switch (level) {
+			case Level.FATAL:
+			case Level.ERROR: //			mesaj = "ERROR: " +mesaj;
+				if (errorUsable)
+					fn = console.error;
+				break;
+			case Level.WARN: //			levelPrefix = "WARN: ";
+				fn = Logger.CONSOLE_WARN_AVAILABLE ? console.warn : console.error;
+				break;
+			case Level.INFO: //			levelPrefix = "INFO: ";
+				fn = console.info;
+				break;
+			case Level.DEBUG: //			levelPrefix = "DEBUG: ";
+			case Level.ALL:
+				if (Logger.CONSOLE_DEBUG_AVAILABLE)
+					fn = console.debug;
+				break;
+			case Level.TRACE:
+				fn = console.trace;
+				break;
+			default: ;
+			}
+			if (!fn) 
+				fn = console.log;
+			fn(/*levelPrefix ? levelPrefix+mesaj :*/ mesaj);
+		}
+	}
+
+	this.debug = function(text) {
+		this.log(text, Level.DEBUG);
+	}
+	
+	this.isDebugEnabled = function() {
+		return level.ordinal >= Level.DEBUG.ordinal;
+	}
+	
+	this.isInfoEnabled = function() {
+		return level.ordinal >= Level.INFO.ordinal;
+	}
+	
+	this.isWarnEnabled = function() {
+		return level.ordinal >= Level.WARN.ordinal;
+	}
+	
+	this.isErrorEnabled = function() {
+		return level.ordinal >= Level.ERROR.ordinal;
+	}
+	
+	this.isFatalEnabled = function() {
+		return level.ordinal >= Level.FATAL.ordinal;
+	}
+	
+	this.trace = function(text) {
+		this.log(text, Level.TRACE);
+	}
+	
+	this.isTraceEnabled = function() {
+		return level.ordinal >= Level.TRACE.ordinal;
+	}
+	
+	this.all = function(text) {
+		this.log(text, Level.ALL);
+	}
+	
+	this.isAllEnabled = function() {
+		return level.ordinal >= Level.ALL.ordinal;
+	}
+};
+
+Object.defineProperty(Logger, "CONSOLE_WARN_AVAILABLE", {
+	value:  console.warn ? true : false,
+	writable: false
+});
+
+Object.defineProperty(Logger, "CONSOLE_DEBUG_AVAILABLE", {
+	value:  console.debug ? true : false,
+	writable: false
+});
+
+Object.defineProperty(Logger.prototype, "fatal", {
+	value: function(text) {
+		this.log(text, Level.FATAL);
+	},
+	writable: false
+});
+
+Object.defineProperty(Logger.prototype, "error", {
+	value: function(text) {
+		this.log(text, Level.ERROR);
+	},
+	writable: false
+});
+
+Object.defineProperty(Logger.prototype, "warn", {
+	value: function(text) {
+		this.log(text, Level.WARN);
+	},
+	writable: false
+});
+
+Object.defineProperty(Logger.prototype, "info", {
+	value: function(text) {
+		this.log(text, Level.INFO);
+	},
+	writable: false
+});
+
+export {
+	Logger
+	, Level
+};
