@@ -25,8 +25,8 @@ class AllTests {
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		let passed = [];
 		let failed = [];
-		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[0].length; i++) {
-			var input = AllTests.TEST_INPUT_OUTPUT[0][i];
+		for (var i = 0; i < AllTests.TEST_INPUT[0].length; i++) {
+			var input = AllTests.TEST_INPUT[0][i];
 			let expected;
 			switch(i) {
 			case 0:
@@ -46,7 +46,7 @@ class AllTests {
 				this.ok();
 			} else {
 				let f = new TestFailure(input, expected, output);
-				failed.push(this.handledFailure(f));
+				failed.push(this.handleFailure(f));
 			}
 		}
 		return new TestResults(passed, failed);
@@ -67,8 +67,8 @@ class AllTests {
 		let results = this.testGroupWithoutName();
 		let passed = results.getPassed();
 		let failed = results.getFailed();
-		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[1].length; i++) {
-			var input = AllTests.TEST_INPUT_OUTPUT[1][i];
+		for (var i = 0; i < AllTests.TEST_INPUT[1].length; i++) {
+			var input = AllTests.TEST_INPUT[1][i];
 			let fn;
 			let expected, expectedPattern;
 			let timestampPatternStr = "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{2}:\\d{2}:\\d{2}";
@@ -127,7 +127,7 @@ class AllTests {
 				this.ok();
 			} else {
 				let f = new TestFailure(input, expected, output);
-				failed.push(this.handledFailure(f));
+				failed.push(this.handleFailure(f));
 			}
 			Logger4Node.cursor.reset();
 		}
@@ -138,7 +138,7 @@ class AllTests {
 		Logger4Node.cursor.green().write("✓ \n").reset();
 	}
 
-	handledFailure(f) {
+	handleFailure(f) {
 		let logger4Node = AllTests.logger4Node;
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		Logger4Node.cursor.red().write("✘ ");
@@ -153,14 +153,14 @@ class AllTests {
 
 	summarize(results) {
 		let logger4Node = AllTests.logger4Node;
-		const TEST_INPUT_OUTPUT = AllTests.TEST_INPUT_OUTPUT;
+		const TEST_INPUT = AllTests.TEST_INPUT;
 		logger4Node.log("-----------------------------------------------------------");
 		var ok = results.getFailed().length == 0;
 		if (ok)
 			Logger4Node.cursor.green();
 		let testsCount = 0;
-		for (let i = 0; i < TEST_INPUT_OUTPUT.length; i++)
-			testsCount += TEST_INPUT_OUTPUT[i].length;
+		for (let i = 0; i < TEST_INPUT.length; i++)
+			testsCount += TEST_INPUT[i].length;
 		logger4Node.log("# Passed: " +results.getPassed().length+ '/' +testsCount+ " (" +Math.round(results.getPassed().length*100/testsCount)+ "%)");
 	}
 }
@@ -179,7 +179,7 @@ AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_N
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
-AllTests.defineReadOnlyProperty("TEST_INPUT_OUTPUT", [
+AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	[
 	"Grouping test: no group name in console when no group name passed in as param (i.e., group name is undefined).", 
 	"Grouping test: .groupEnd() call passed on OK." 
