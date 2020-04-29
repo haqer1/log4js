@@ -4,6 +4,7 @@
   "description": "a Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
+    "build": "rollup --config",
     "test": "node -r esm src/test/js/com/adazes/util/log4js/AllTests"
   },
   "keywords": [
