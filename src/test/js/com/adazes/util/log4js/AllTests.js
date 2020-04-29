@@ -4,6 +4,8 @@
 import Logger4Node from "../../../../../../main/js/com/adazes/util/log4js/Logger4Node.js";
 import {Level/**/, Logger} from "../../../../../../main/js/com/adazes/util/log4js/Logger.js";
 import ConsoleInterceptor from "./ConsoleInterceptor.js";
+import TestResults from "../TestResults.js";
+import TestFailure from "../TestFailure.js";
 
 /*
  * ES6 is not good enough for real OOP due to lack of support for private variables.
@@ -18,66 +20,96 @@ class AllTests {
 
 	}
 
-	testLogger() { 
+	testGroupWithoutName() {
+		let logger4Node = AllTests.logger4Node;
+		let consoleInterceptor = AllTests.consoleInterceptor;
 		let passed = [];
 		let failed = [];
-		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT.length; i++) {
-			var input = AllTests.TEST_INPUT_OUTPUT[i];
+		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[0].length; i++) {
+			var input = AllTests.TEST_INPUT_OUTPUT[0][i];
+			let expected;
+			switch(i) {
+			case 0:
+				logger4Node.group();
+				logger4Node.log(input);
+				expected = undefined;
+				break;
+			case 1:
+				logger4Node.log(input);
+				logger4Node.groupEnd();
+				expected = null;
+				break;
+			}
+			let output = consoleInterceptor.getLastMessage();
+			if (output === expected) {
+				passed.push(i);
+				this.ok();
+			} else {
+				let f = new TestFailure(input, expected, output);
+				failed.push(this.handledFailure(f));
+			}
+		}
+		return new TestResults(passed, failed);
+	}
+
+	testLogger4Node() { 
+		let logger4Node = AllTests.logger4Node;
+		let consoleInterceptor = AllTests.consoleInterceptor;
+		let logger4NodeWithName = AllTests.logger4NodeWithName;
+		let logger4NodeWithNameWithTimeStamp = AllTests.logger4NodeWithNameWithTimeStamp;
+		let logger4NodeWithLevelIndicator = AllTests.logger4NodeWithLevelIndicator;
+		let loggerWithLevelIndicator = AllTests.loggerWithLevelIndicator;
+		let loggerWithTimestamp = AllTests.loggerWithTimestamp;
+		let loggerWithFullPrefix = AllTests.loggerWithFullPrefix;
+		let logger = AllTests.logger;
+
+		logger4Node.group("Logger4Node group");
+		let results = this.testGroupWithoutName();
+		let passed = results.getPassed();
+		let failed = results.getFailed();
+		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[1].length; i++) {
+			var input = AllTests.TEST_INPUT_OUTPUT[1][i];
 			let fn;
 			let expected, expectedPattern;
 			let timestampPatternStr = "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{2}:\\d{2}:\\d{2}";
-			let regexBasedTest = i == 3 || i == 6 || i == 7 || i == 8;
-			let logger4Node = AllTests.logger4Node;
-			let consoleInterceptor = AllTests.consoleInterceptor;
-			let logger4NodeWithName = AllTests.logger4NodeWithName;
-			let logger4NodeWithNameWithTimeStamp = AllTests.logger4NodeWithNameWithTimeStamp;
-			let logger4NodeWithLevelIndicator = AllTests.logger4NodeWithLevelIndicator;
-			let loggerWithLevelIndicator = AllTests.loggerWithLevelIndicator;
-			let loggerWithTimestamp = AllTests.loggerWithTimestamp;
-			let loggerWithFullPrefix = AllTests.loggerWithFullPrefix;
-			let logger = AllTests.logger;
+			let regexBasedTest = i == 2 || i == 5 || i == 6 || i == 7;
 			switch(i) {
 			case 0:
-				logger4Node.group("Logger4Node group");
-				logger4Node.group();
-				expected = null;
-				break;
-			case 1:
 				logger4Node.error(input);
 				expected = input;
 				break;
-			case 2:
+			case 1:
 				logger4NodeWithName.warn(input);
 				expected = AllTests.WARNING_TEST_LOGGER_NAME+ ": " +input;
 				break;
-			case 3:
+			case 2:
 				logger4NodeWithNameWithTimeStamp.info(input);
 				expectedPattern = new RegExp(AllTests.INFO_TEST_LOGGER_NAME+ " \\(" +timestampPatternStr+ "\\): " +input);
 				break;
-			case 4:
+			case 3:
 				if (logger4NodeWithNameWithTimeStamp.isDebugEnabled())
 					logger4Node.debug(input);
 				expected = null;
 				break;
-			case 5:
+			case 4:
 				logger4NodeWithLevelIndicator.all(input);
 				expected = "A> " +input;
 				break;
-			case 6:
+			case 5:
 				loggerWithLevelIndicator.group("Logger group");
 				loggerWithLevelIndicator.all(input);
 				expectedPattern = new RegExp("A> " +timestampPatternStr+ ": " +input);
 				break;
-			case 7:
+			case 6:
 				loggerWithTimestamp.debug(input);
 				expectedPattern = new RegExp('^' +timestampPatternStr+ ": " +input);
 				break; // TODO: add 2 tests: group with name assert & groupEnd with name reset assert
-			case 8:
+			case 7:
 				if (loggerWithFullPrefix.isDebugEnabled())
 					loggerWithFullPrefix.debug(input);
 				expectedPattern = new RegExp("^D> " +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +timestampPatternStr+ "\\): " +input);
 				break;
-			case 9:
+			case 8:
 				if (logger.isTraceEnabled())
 					logger.trace(input);
 				expected = null;
@@ -86,40 +118,50 @@ class AllTests {
 			let output = consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
 				passed.push(i);
-				if (i == 0)
-					logger4Node.log(input);
-				if (i == 4 || i == 9) {
+				if (i == 3 || i == 8) {
 					logger4Node.debug("no message for " +(i == 3 ? "DEBUG" : "TRACE") + " on INFO logger for: " +input);
-					if (i == 9)	
+					if (i == 8)	
 						logger.groupEnd();
-				} else if (i == 0 || i == 5)
+				} else if (i == 4)
 					logger4Node.groupEnd();
-				Logger4Node.cursor.green().write("✓ \n");
+				this.ok();
 			} else {
-				let f = {i: i, input: input, expected: !regexBasedTest ? expected : expectedPattern, output: output};
-				failed.push(f);
-				Logger4Node.cursor.red().write("✘ ");
-				logger4Node.warn("\t=== expected: ===");
-				logger4Node.warn(f.expected);
-				logger4Node.warn("\t=== output: ===");
-				logger4Node.warn(f.output);
-				consoleInterceptor.resetMessage();
-		//		logger4Node.log(input);
+				let f = new TestFailure(input, expected, output);
+				failed.push(this.handledFailure(f));
 			}
 			Logger4Node.cursor.reset();
 		}
-		return {passed: passed, failed: failed};
+		return results;
 	}
 
+	ok() {
+		Logger4Node.cursor.green().write("✓ \n").reset();
+	}
 
-	summarize(passedFailed) {
+	handledFailure(f) {
+		let logger4Node = AllTests.logger4Node;
+		let consoleInterceptor = AllTests.consoleInterceptor;
+		Logger4Node.cursor.red().write("✘ ");
+		logger4Node.warn("\t=== expected: ===");
+		logger4Node.warn(f.getExpected());
+		logger4Node.warn("\t=== actual: ===");
+		logger4Node.warn(f.getActual());
+		consoleInterceptor.resetMessage();
+//		logger4Node.log(input);
+		return f;
+	}
+
+	summarize(results) {
 		let logger4Node = AllTests.logger4Node;
 		const TEST_INPUT_OUTPUT = AllTests.TEST_INPUT_OUTPUT;
 		logger4Node.log("-----------------------------------------------------------");
-		var ok = passedFailed.failed.length == 0;
+		var ok = results.getFailed().length == 0;
 		if (ok)
 			Logger4Node.cursor.green();
-		logger4Node.log("# Passed: " +passedFailed.passed.length+ '/' +TEST_INPUT_OUTPUT.length+ " (" +Math.round(passedFailed.passed.length*100/TEST_INPUT_OUTPUT.length)+ "%)");
+		let testsCount = 0;
+		for (let i = 0; i < TEST_INPUT_OUTPUT.length; i++)
+			testsCount += TEST_INPUT_OUTPUT[i].length;
+		logger4Node.log("# Passed: " +results.getPassed().length+ '/' +testsCount+ " (" +Math.round(results.getPassed().length*100/testsCount)+ "%)");
 	}
 }
 AllTests.defineReadOnlyProperty("WARNING_TEST_LOGGER_NAME", "WarningTest");
@@ -138,7 +180,11 @@ AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_N
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
 AllTests.defineReadOnlyProperty("TEST_INPUT_OUTPUT", [
-	"Grouping test: no group name in console when no group name passed.", 
+	[
+	"Grouping test: no group name in console when no group name passed in as param (i.e., group name is undefined).", 
+	"Grouping test: .groupEnd() call passed on OK." 
+	],
+	[
 	"Error test with named Logger4Node with prefix skipped", 
 	"Warn test with named Logger4Node",
 	"Info test with named Logger4Node with timestamp",
@@ -149,8 +195,9 @@ AllTests.defineReadOnlyProperty("TEST_INPUT_OUTPUT", [
 	"All test with named Logger with timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional"
 	]
+]
 );
 let allTests = new AllTests();
-let passedFailed = allTests.testLogger();
+let passedFailed = allTests.testLogger4Node();
 allTests.summarize(passedFailed);
 
