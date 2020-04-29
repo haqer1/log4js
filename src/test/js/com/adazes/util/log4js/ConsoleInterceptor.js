@@ -7,12 +7,14 @@ var ConsoleInterceptor = function() {
 	let origMethods = {};
 	
 	function init() {
-		for (let i in Level.ALL_LEVELS_ARRAY) {
-			let level = Level.ALL_LEVELS_ARRAY[i];
-			if (level != Level.OFF) {
-				let levelLC = Level.ALL_LEVELS_ARRAY[i].NAME.toLowerCase();
-				origMethods[levelLC] = global.console[levelLC];
-				global.console[levelLC] = bu[levelLC];
+		let groupMethods = ["group", "groupEnd"]
+		let levelAndGroupMethods = Level.ALL_LEVELS_ARRAY.concat(groupMethods);
+		for (let i in levelAndGroupMethods) {
+			let levelOrGroup = Level.ALL_LEVELS_ARRAY[i];
+			if (levelOrGroup != Level.OFF) {
+				let methodName = levelOrGroup ? levelOrGroup.NAME.toLowerCase() : levelAndGroupMethods[i];
+				origMethods[methodName] = global.console[methodName];
+				global.console[methodName] = bu[methodName];
 			}
 		}
 	}
@@ -52,13 +54,27 @@ var ConsoleInterceptor = function() {
 		lastMessage = s;
 	}
 
-	this.getLastMessage = function() {
+	this.getLastMessage = function(skipResetting) {
 		var lm = lastMessage;
-		lastMessage = null;
+		if (!skipResetting)
+			lastMessage = null;
 		return lm;
 	}
 
 	this.resetMessage = function() { lastMessage = null }
+
+	this.group = function(name) {
+		if (name)
+			origMethods.group(name);
+		else
+			origMethods.group();
+		lastMessage = name;
+	}
+
+	this.groupEnd = function() {
+		origMethods.groupEnd();
+		lastMessage = null;
+	}
 
 	init();
 };
