@@ -6,128 +6,128 @@ Object.defineProperty(Level, "OFF", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.OFF, "ordinal", {
+Object.defineProperty(Level.OFF, "ORDINAL", {
 	value: 0,
 	writable: false
 });
-Object.defineProperty(Level.OFF, "name", {
+Object.defineProperty(Level.OFF, "NAME", {
 	value: "OFF",
 	writable: false
 });
-Object.defineProperty(Level.OFF, "abbreviation", {
-	value: Level.OFF.name.charAt(0),
+Object.defineProperty(Level.OFF, "ABBREVIATION", {
+	value: Level.OFF.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "FATAL", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.FATAL, "ordinal", {
+Object.defineProperty(Level.FATAL, "ORDINAL", {
 	value: 100,
 	writable: false
 });
-Object.defineProperty(Level.FATAL, "name", {
+Object.defineProperty(Level.FATAL, "NAME", {
 	value: "FATAL",
 	writable: false
 });
-Object.defineProperty(Level.FATAL, "abbreviation", {
-	value: Level.FATAL.name.charAt(0),
+Object.defineProperty(Level.FATAL, "ABBREVIATION", {
+	value: Level.FATAL.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "ERROR", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.ERROR, "ordinal", {
+Object.defineProperty(Level.ERROR, "ORDINAL", {
 	value: 200,
 	writable: false
 });
-Object.defineProperty(Level.ERROR, "name", {
+Object.defineProperty(Level.ERROR, "NAME", {
 	value: "ERROR",
 	writable: false
 });
-Object.defineProperty(Level.ERROR, "abbreviation", {
-	value: Level.ERROR.name.charAt(0),
+Object.defineProperty(Level.ERROR, "ABBREVIATION", {
+	value: Level.ERROR.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "WARN", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.WARN, "ordinal", {
+Object.defineProperty(Level.WARN, "ORDINAL", {
 	value: 300,
 	writable: false
 });
-Object.defineProperty(Level.WARN, "name", {
+Object.defineProperty(Level.WARN, "NAME", {
 	value: "WARN",
 	writable: false
 });
-Object.defineProperty(Level.WARN, "abbreviation", {
-	value: Level.WARN.name.charAt(0),
+Object.defineProperty(Level.WARN, "ABBREVIATION", {
+	value: Level.WARN.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "INFO", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.INFO, "ordinal", {
+Object.defineProperty(Level.INFO, "ORDINAL", {
 	value: 400,
 	writable: false
 });
-Object.defineProperty(Level.INFO, "name", {
+Object.defineProperty(Level.INFO, "NAME", {
 	value: "INFO",
 	writable: false
 });
-Object.defineProperty(Level.INFO, "abbreviation", {
-	value: Level.INFO.name.charAt(0),
+Object.defineProperty(Level.INFO, "ABBREVIATION", {
+	value: Level.INFO.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "DEBUG", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.DEBUG, "ordinal", {
+Object.defineProperty(Level.DEBUG, "ORDINAL", {
 	value: 500,
 	writable: false
 });
-Object.defineProperty(Level.DEBUG, "name", {
+Object.defineProperty(Level.DEBUG, "NAME", {
 	value: "DEBUG",
 	writable: false
 });
-Object.defineProperty(Level.DEBUG, "abbreviation", {
-	value: Level.DEBUG.name.charAt(0),
+Object.defineProperty(Level.DEBUG, "ABBREVIATION", {
+	value: Level.DEBUG.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "TRACE", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.TRACE, "ordinal", {
+Object.defineProperty(Level.TRACE, "ORDINAL", {
 	value: 600,
 	writable: false
 });
-Object.defineProperty(Level.TRACE, "name", {
+Object.defineProperty(Level.TRACE, "NAME", {
 	value: "TRACE",
 	writable: false
 });
-Object.defineProperty(Level.TRACE, "abbreviation", {
-	value: Level.TRACE.name.charAt(0),
+Object.defineProperty(Level.TRACE, "ABBREVIATION", {
+	value: Level.TRACE.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "ALL", {
 	value: {},
 	writable: false
 });
-Object.defineProperty(Level.ALL, "ordinal", {
+Object.defineProperty(Level.ALL, "ORDINAL", {
 	value: 700,
 	writable: false
 });
-Object.defineProperty(Level.ALL, "name", {
+Object.defineProperty(Level.ALL, "NAME", {
 	value: "ALL",
 	writable: false
 });
-Object.defineProperty(Level.ALL, "abbreviation", {
-	value: Level.ALL.name.charAt(0),
+Object.defineProperty(Level.ALL, "ABBREVIATION", {
+	value: Level.ALL.NAME.charAt(0),
 	writable: false
 });
 Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
@@ -162,7 +162,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 			var mesaj;
 			let nameOrTimestamp = !skipName || !skipTimestamp
 			if (!skipPrefix && prependLevelAbbreviation ) {
-				mesaj = level.abbreviation;
+				mesaj = level.ABBREVIATION;
 				mesaj += '>'; 
 			}
 			if (!skipPrefix && !skipName)
@@ -189,21 +189,20 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 				mesaj += ' ' +text;
 			} else
 				mesaj = text;
-	//		var levelPrefix;
 			var fn;
 			switch (level) {
 			case Level.FATAL:
-			case Level.ERROR: //			mesaj = "ERROR: " +mesaj;
+			case Level.ERROR:
 				if (errorUsable)
 					fn = console.error;
 				break;
-			case Level.WARN: //			levelPrefix = "WARN: ";
+			case Level.WARN:
 				fn = Logger.CONSOLE_WARN_AVAILABLE ? console.warn : console.error;
 				break;
-			case Level.INFO: //			levelPrefix = "INFO: ";
+			case Level.INFO:
 				fn = console.info;
 				break;
-			case Level.DEBUG: //			levelPrefix = "DEBUG: ";
+			case Level.DEBUG:
 			case Level.ALL:
 				if (Logger.CONSOLE_DEBUG_AVAILABLE)
 					fn = console.debug;
@@ -215,7 +214,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 			}
 			if (!fn) 
 				fn = console.log;
-			fn(/*levelPrefix ? levelPrefix+mesaj :*/ mesaj);
+			fn(mesaj);
 		}
 	}
 
@@ -224,23 +223,23 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.isDebugEnabled = function() {
-		return level.ordinal >= Level.DEBUG.ordinal;
+		return level.ORDINAL >= Level.DEBUG.ORDINAL;
 	}
 	
 	this.isInfoEnabled = function() {
-		return level.ordinal >= Level.INFO.ordinal;
+		return level.ORDINAL >= Level.INFO.ORDINAL;
 	}
 	
 	this.isWarnEnabled = function() {
-		return level.ordinal >= Level.WARN.ordinal;
+		return level.ORDINAL >= Level.WARN.ORDINAL;
 	}
 	
 	this.isErrorEnabled = function() {
-		return level.ordinal >= Level.ERROR.ordinal;
+		return level.ORDINAL >= Level.ERROR.ORDINAL;
 	}
 	
 	this.isFatalEnabled = function() {
-		return level.ordinal >= Level.FATAL.ordinal;
+		return level.ORDINAL >= Level.FATAL.ORDINAL;
 	}
 	
 	this.trace = function(text) {
@@ -248,7 +247,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.isTraceEnabled = function() {
-		return level.ordinal >= Level.TRACE.ordinal;
+		return level.ORDINAL >= Level.TRACE.ORDINAL;
 	}
 	
 	this.all = function(text) {
@@ -256,7 +255,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.isAllEnabled = function() {
-		return level.ordinal >= Level.ALL.ordinal;
+		return level.ORDINAL >= Level.ALL.ORDINAL;
 	}
 };
 

@@ -10,7 +10,7 @@ var ConsoleInterceptor = function() {
 		for (let i in Level.ALL_LEVELS_ARRAY) {
 			let level = Level.ALL_LEVELS_ARRAY[i];
 			if (level != Level.OFF) {
-				let levelLC = Level.ALL_LEVELS_ARRAY[i].name.toLowerCase();
+				let levelLC = Level.ALL_LEVELS_ARRAY[i].NAME.toLowerCase();
 				origMethods[levelLC] = global.console[levelLC];
 				global.console[levelLC] = bu[levelLC];
 			}
