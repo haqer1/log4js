@@ -1,7 +1,7 @@
 /**
  * Logging level constants.
  */
-let Level = {};
+var Level = {};
 Object.defineProperty(Level, "OFF", {
 	value: {},
 	writable: false
@@ -142,7 +142,7 @@ Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
  * @param	loggingLevel	Logging level
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
  */
-let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
+var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
 
 	var level = loggingLevel ? loggingLevel : Level.INFO;
 	var errorUsable = console.error ? true : false;
@@ -160,7 +160,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	this.log = function(text, level) {
 		if (level != Level.OFF) {
 			var mesaj;
-			let nameOrTimestamp = !skipName || !skipTimestamp
+			var nameOrTimestamp = !skipName || !skipTimestamp
 			if (!skipPrefix && prependLevelAbbreviation ) {
 				mesaj = level.ABBREVIATION;
 				mesaj += '>'; 
@@ -169,7 +169,7 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 				mesaj = mesaj ? mesaj+ ' ' +isim : isim;
 			if (!skipPrefix && !skipTimestamp) {
 				var date = new Date();
-				let parenthesesUsed;
+				var parenthesesUsed;
 				if (mesaj)
 					mesaj += ' ';
 				if (!skipName) {
@@ -257,6 +257,15 @@ let Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	this.isAllEnabled = function() {
 		return level.ORDINAL >= Level.ALL.ORDINAL;
 	}
+
+	this.group = function(name) {
+		if (name)
+			console.group(name);
+		else
+			console.group();
+	}
+
+	this.groupEnd = function() { console.groupEnd() }
 };
 
 Object.defineProperty(Logger, "CONSOLE_WARN_AVAILABLE", {

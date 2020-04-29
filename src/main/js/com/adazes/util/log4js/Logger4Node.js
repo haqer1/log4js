@@ -7,7 +7,7 @@ import * as logging from "./Logger.js";
  * @param	loggingLevel	Logging level
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
  */
-let Logger4Node = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
+var Logger4Node = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
 	logging.Logger.call(this, isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation);
 
 	this.decorateErrorOutput = function(start) {
