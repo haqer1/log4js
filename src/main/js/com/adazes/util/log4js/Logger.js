@@ -170,14 +170,12 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	 * @param	text	message to log
 	 * @param	level	level to prefix to the message
 	 */
-	this.log = function(text, level) {
-		if (level != Level.OFF) {
+	this.log = function(text, messageLevel) {
+		var notOff = level != Level.OFF;
+		if (notOff) {
 			var mesaj;
-			var nameOrTimestamp = !skipName || !skipTimestamp
-			if (!skipPrefix && prependLevelAbbreviation ) {
-				mesaj = level.ABBREVIATION;
-				mesaj += Level.ABBREVIATION_SUFFIX; 
-			}
+			if (!skipPrefix && prependLevelAbbreviation )
+				mesaj = messageLevel.ABBREVIATION + Level.ABBREVIATION_SUFFIX; 
 			if (!skipPrefix && !skipName)
 				mesaj = mesaj ? mesaj+ ' ' +isim : isim;
 			if (!skipPrefix && !skipTimestamp) {
@@ -191,19 +189,19 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 				}
 				if (!mesaj)
 					mesaj = '';
-				// date.toXYZ: Used to be targeting IE 9, now for esm
+				// date.toXYZ: needed for esm (even if not targeting IE 9) 
 				mesaj += formatter ? formatter.format(date) : date.toLocaleDateString()+ ", " +date.toLocaleTimeString();
 				if (parenthesesUsed)
 					mesaj += ')';
 			}
 			if (mesaj) {
-				if (nameOrTimestamp)
+				if (!skipName || !skipTimestamp)
 					mesaj += ':';
 				mesaj += ' ' +text;
 			} else
 				mesaj = text;
 			var fn;
-			switch (level) {
+			switch (messageLevel) {
 			case Level.FATAL:
 			case Level.ERROR:
 				if (errorUsable)
@@ -222,17 +220,16 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 				break;
 			case Level.TRACE:
 				fn = console.trace;
-				break;
-			default: ;
 			}
 			if (!fn) 
 				fn = console.log;
 			fn(mesaj);
 		}
+		return notOff;
 	}
 
 	this.debug = function(text) {
-		this.log(text, Level.DEBUG);
+		return this.log(text, Level.DEBUG);
 	}
 	
 	this.isDebugEnabled = function() {
@@ -256,7 +253,7 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.trace = function(text) {
-		this.log(text, Level.TRACE);
+		return this.log(text, Level.TRACE);
 	}
 	
 	this.isTraceEnabled = function() {
@@ -264,7 +261,7 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.all = function(text) {
-		this.log(text, Level.ALL);
+		return this.log(text, Level.ALL);
 	}
 	
 	this.isAllEnabled = function() {
@@ -300,21 +297,21 @@ Object.defineProperty(Logger.prototype, "fatal", {
 
 Object.defineProperty(Logger.prototype, "error", {
 	value: function(text) {
-		this.log(text, Level.ERROR);
+		return this.log(text, Level.ERROR);
 	},
 	writable: false
 });
 
 Object.defineProperty(Logger.prototype, "warn", {
 	value: function(text) {
-		this.log(text, Level.WARN);
+		return this.log(text, Level.WARN);
 	},
 	writable: false
 });
 
 Object.defineProperty(Logger.prototype, "info", {
 	value: function(text) {
-		this.log(text, Level.INFO);
+		return this.log(text, Level.INFO);
 	},
 	writable: false
 });

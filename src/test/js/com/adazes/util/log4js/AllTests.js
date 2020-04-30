@@ -119,9 +119,6 @@ class AllTests {
 
 	testLoggerDelegate(inputIndex, addToSubIndex) { 
 		let consoleInterceptor = AllTests.consoleInterceptor;
-		let loggerWithLevelIndicator = AllTests.loggerWithLevelIndicator;
-		let loggerWithTimestamp = AllTests.loggerWithTimestamp;
-		let loggerWithFullPrefix = AllTests.loggerWithFullPrefix;
 		let logger = AllTests.logger;
 
 		let passed = [];
@@ -131,18 +128,19 @@ class AllTests {
 			let expected, expectedPattern;
 			let i = j + addToSubIndex;
 			let regexBasedTest = i == 0 || i == 1 || i == 2;
+			let output; 
 			switch(i) {
 			case 0:
-				loggerWithLevelIndicator.all(input);
+				AllTests.loggerWithLevelIndicator.all(input);
 				expectedPattern = new RegExp("A> " +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
 				break;
 			case 1:
-				loggerWithTimestamp.debug(input);
+				AllTests.loggerWithTimestamp.debug(input);
 				expectedPattern = new RegExp('^' +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
 				break; // TODO: add 2 tests: group with name assert & groupEnd with name reset assert
 			case 2:
-				if (loggerWithFullPrefix.isDebugEnabled())
-					loggerWithFullPrefix.debug(input);
+				if (AllTests.loggerWithFullPrefix.isDebugEnabled())
+					AllTests.loggerWithFullPrefix.debug(input);
 				expectedPattern = new RegExp("^D> " +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +AllTests.TIMESTAMP_PATTERN_STR+ "\\): " +input);
 				break;
 			case 3:
@@ -150,14 +148,16 @@ class AllTests {
 					logger.trace(input);
 				expected = null;
 				break;
+			case 4:
+				output = AllTests.loggerWithLevelOfOFF.info(input);
+				expected = false;
 			}
-			let output = consoleInterceptor.getLastMessage();
+			if (output == undefined)
+				output = consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
 				passed.push(i);
-				if (i == 3) {
-					logger.debug("no message for " + "TRACE" + " on INFO logger for: " +input);
-					logger.groupEnd();
-				}
+				if (i == 3 || i == 4)
+					logger.debug("no message for " + (i == 3 ? "TRACE" : "INFO") + " on " +(i == 3 ? "INFO" : "OFF")+ " logger for: " +input);
 				this.ok();
 			} else {
 				let f = new TestFailure(input, expected, output);
@@ -165,6 +165,8 @@ class AllTests {
 			}
 			Logger4Node.cursor.reset();
 		}
+		if (inputIndex == 4)
+			logger.groupEnd();
 		return new TestResults(passed, failed);
 	}
 
@@ -227,6 +229,7 @@ AllTests.defineReadOnlyProperty("loggerWithLevelIndicator", new Logger(AllTests.
 AllTests.defineReadOnlyProperty("loggerWithTimestamp", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.DEBUG, false, false, true));
 AllTests.defineReadOnlyProperty("loggerWithFullPrefix", new Logger(AllTests.FULL_PREFIX_TEST_LOGGER_NAME, Level.ALL, false, false, false, true));
 AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.INFO, true));
+AllTests.defineReadOnlyProperty("loggerWithLevelOfOFF", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.OFF, true));
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
@@ -255,7 +258,8 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	],
 	[
 	"All test with named Logger with timestamp, & level indicator: also testing level indicator being call-specific",
-	"Trace test with named Logger with level conditional"
+	"Trace test with named Logger with level conditional",
+	"Info test with named Logger with level of OFF"
 	]
 ]
 );
