@@ -2,6 +2,10 @@
  * Logging level constants.
  */
 var Level = {};
+Object.defineProperty(Level, "ABBREVIATION_SUFFIX", {
+	value: '>',
+	writable: false
+});
 Object.defineProperty(Level, "OFF", {
 	value: {},
 	writable: false
@@ -163,7 +167,7 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 			var nameOrTimestamp = !skipName || !skipTimestamp
 			if (!skipPrefix && prependLevelAbbreviation ) {
 				mesaj = level.ABBREVIATION;
-				mesaj += '>'; 
+				mesaj += Level.ABBREVIATION_SUFFIX; 
 			}
 			if (!skipPrefix && !skipName)
 				mesaj = mesaj ? mesaj+ ' ' +isim : isim;

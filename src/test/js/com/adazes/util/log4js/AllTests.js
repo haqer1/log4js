@@ -93,21 +93,19 @@ class AllTests {
 				break;
 			case 3:
 				if (logger4NodeWithNameWithTimeStamp.isDebugEnabled())
-					logger4Node.debug(input);
+					logger4NodeWithNameWithTimeStamp.debug(input);
 				expected = null;
 				break;
 			case 4:
 				logger4NodeWithLevelIndicator.all(input);
-				expected = "A> " +input;
+				expected = Level.ALL.ABBREVIATION + Level.ABBREVIATION_SUFFIX + ' ' +input;
 				break;
 			}
 			let output = consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
 				passed.push(i);
-				if (i == 3) {
+				if (i == 3)
 					logger4Node.debug("no message for " + "DEBUG" + " on INFO logger for: " +input);
-				} else if (i == 4)
-					logger4Node.groupEnd();
 				this.ok();
 			} else {
 				let f = new TestFailure(input, expected, output);
@@ -115,6 +113,7 @@ class AllTests {
 			}
 			Logger4Node.cursor.reset();
 		}
+		logger4Node.groupEnd();
 		return results;
 	}
 
@@ -166,8 +165,7 @@ class AllTests {
 			}
 			Logger4Node.cursor.reset();
 		}
-		let results = new TestResults(passed, failed); 
-		return results;
+		return new TestResults(passed, failed);
 	}
 
 	testLogger() { 
@@ -191,30 +189,30 @@ class AllTests {
 		Logger4Node.cursor.green().write("✓ \n").reset();
 	}
 
-	handleFailure(f) {
+	handleFailure(testFailure) {
 		let logger4Node = AllTests.logger4Node;
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		Logger4Node.cursor.red().write("✘ ");
 		logger4Node.warn("\t=== expected: ===");
-		logger4Node.warn(f.getExpected());
+		logger4Node.warn(testFailure.getExpected());
 		logger4Node.warn("\t=== actual: ===");
-		logger4Node.warn(f.getActual());
+		logger4Node.warn(testFailure.getActual());
 		consoleInterceptor.resetMessage();
-//		logger4Node.log(input);
-		return f;
+		return testFailure;
 	}
 
 	summarize(results) {
 		let logger4Node = AllTests.logger4Node;
 		const TEST_INPUT = AllTests.TEST_INPUT;
 		logger4Node.log("-----------------------------------------------------------");
-		var ok = results.getFailed().length == 0;
-		if (ok)
-			Logger4Node.cursor.green();
+		let passedCount = results.getPassed().length;
 		let testsCount = 0;
 		for (let i = 0; i < TEST_INPUT.length; i++)
 			testsCount += TEST_INPUT[i].length;
-		logger4Node.log("# Passed: " +results.getPassed().length+ '/' +testsCount+ " (" +Math.round(results.getPassed().length*100/testsCount)+ "%)");
+		var ok = results.getFailed().length == 0;
+		if (ok)
+			Logger4Node.cursor.green();
+		logger4Node.log("# Passed: " +passedCount+ '/' +testsCount+ " (" +Math.round(passedCount * 100 / testsCount)+ "%)");
 	}
 }
 AllTests.defineReadOnlyProperty("WARNING_TEST_LOGGER_NAME", "WarningTest");
