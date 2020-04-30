@@ -6,6 +6,7 @@ Object.defineProperty(Level, "ABBREVIATION_SUFFIX", {
 	value: '>',
 	writable: false
 });
+
 Object.defineProperty(Level, "OFF", {
 	value: {},
 	writable: false
@@ -22,6 +23,7 @@ Object.defineProperty(Level.OFF, "ABBREVIATION", {
 	value: Level.OFF.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "FATAL", {
 	value: {},
 	writable: false
@@ -38,6 +40,7 @@ Object.defineProperty(Level.FATAL, "ABBREVIATION", {
 	value: Level.FATAL.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "ERROR", {
 	value: {},
 	writable: false
@@ -54,6 +57,7 @@ Object.defineProperty(Level.ERROR, "ABBREVIATION", {
 	value: Level.ERROR.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "WARN", {
 	value: {},
 	writable: false
@@ -70,6 +74,7 @@ Object.defineProperty(Level.WARN, "ABBREVIATION", {
 	value: Level.WARN.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "INFO", {
 	value: {},
 	writable: false
@@ -86,6 +91,7 @@ Object.defineProperty(Level.INFO, "ABBREVIATION", {
 	value: Level.INFO.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "DEBUG", {
 	value: {},
 	writable: false
@@ -102,6 +108,7 @@ Object.defineProperty(Level.DEBUG, "ABBREVIATION", {
 	value: Level.DEBUG.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "TRACE", {
 	value: {},
 	writable: false
@@ -118,6 +125,7 @@ Object.defineProperty(Level.TRACE, "ABBREVIATION", {
 	value: Level.TRACE.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "ALL", {
 	value: {},
 	writable: false
@@ -134,6 +142,7 @@ Object.defineProperty(Level.ALL, "ABBREVIATION", {
 	value: Level.ALL.NAME.charAt(0),
 	writable: false
 });
+
 Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
 	value: [Level.OFF, Level.FATAL, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL],
 	writable: false
