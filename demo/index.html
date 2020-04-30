@@ -14,16 +14,17 @@
 			const FULL_PREFIX_TEST_LOGGER_NAME = "FullPrefixLogger";
 			var loggerWithLevelIndicator = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.ALL, false, false, true, true);
 			var loggerWithTimestamp = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.DEBUG, false, false, true);
+			var loggerWithTimestampAndName = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.DEBUG, false, false);
 			var loggerWithFullPrefix = new log4js.Logger(FULL_PREFIX_TEST_LOGGER_NAME, log4js.Level.ALL, false, false, false, true);
 			var logger = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.INFO, true);
 			var loggerWithLevelOfOFF = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.OFF, true);
 
 			window.onload = function() {
 				loggerWithLevelIndicator.all("All test with Logger with timestamp & level indicator");
-				loggerWithFullPrefix.debug("Debug test with full-prefix Logger (including level indicator)");
+				loggerWithFullPrefix.debug("Debug test with full-prefix Logger (including level indicator) (also showing level indicator being call-specific)");
 				if (loggerWithTimestamp.isInfoEnabled())
-					loggerWithTimestamp.info("Info test w/ named Logger w/ timestamp: also testing level indicator being call-specific");
-				loggerWithTimestamp.warn("Warn test w/ named Logger w/ timestamp: a stack-trace will be shown on 2nd line below this 1 (this is just as an example)");
+					loggerWithTimestamp.info("Info test w/ named Logger w/ timestamp (with name skipped)");
+				loggerWithTimestampAndName.warn("Warn test w/ named Logger w/ timestamp: a stack-trace will be shown on 2nd line below this 1 (this is just as an example)");
 				loggerWithLevelOfOFF.info("Info test with named Logger with level of OFF");
 				logger.error("It would be an error to think that this is about a real error");
 				logger.trace("Trace test with named Logger with prefix skipped & without level conditional");
