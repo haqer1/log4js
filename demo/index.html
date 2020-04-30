@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr-FR">
+    <head>
+        <title>jog4js demo</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<script src="../dist/log4js.js" type="text/javascript"></script>
+		<link href="style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+		<div id="greeting">Please open the Console <span class="eg">(e.g., by using Ctrl+I shortcut)</span> to see the messages logged.</div>
+		<script type="text/javascript">
+			const ALL_TESTS_LOGGER_NAME = "Demo";
+			const FULL_PREFIX_TEST_LOGGER_NAME = "FullPrefixLogger";
+			var loggerWithLevelIndicator = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.ALL, false, false, true, true);
+			var loggerWithTimestamp = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.DEBUG, false, false, true);
+			var loggerWithFullPrefix = new log4js.Logger(FULL_PREFIX_TEST_LOGGER_NAME, log4js.Level.ALL, false, false, false, true);
+			var logger = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.INFO, true);
+			var loggerWithLevelOfOFF = new log4js.Logger(ALL_TESTS_LOGGER_NAME, log4js.Level.OFF, true);
+
+			window.onload = function() {
+				loggerWithLevelIndicator.all("All test with Logger with timestamp & level indicator");
+				loggerWithFullPrefix.debug("Debug test with full-prefix Logger (including level indicator)");
+				if (loggerWithTimestamp.isInfoEnabled())
+					loggerWithTimestamp.info("Info test w/ named Logger w/ timestamp: also testing level indicator being call-specific");
+				loggerWithTimestamp.warn("Warn test w/ named Logger w/ timestamp: a stack-trace will be shown on 2nd line below this 1 (this is just as an example)");
+				loggerWithLevelOfOFF.info("Info test with named Logger with level of OFF");
+				logger.error("It would be an error to think that this is about a real error");
+				logger.trace("Trace test with named Logger with prefix skipped & without level conditional");
+			};
+		</script>
+	</body>
+</html>
