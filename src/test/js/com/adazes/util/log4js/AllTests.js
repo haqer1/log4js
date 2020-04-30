@@ -108,7 +108,7 @@ class AllTests {
 					logger4Node.debug("no message for " + "DEBUG" + " on INFO logger for: " +input);
 				this.ok();
 			} else {
-				let f = new TestFailure(input, expected, output);
+				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
 				failed.push(this.handleFailure(f));
 			}
 			Logger4Node.cursor.reset();
