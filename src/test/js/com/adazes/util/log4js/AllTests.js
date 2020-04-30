@@ -20,23 +20,25 @@ class AllTests {
 
 	}
 
-	testGroupWithoutName() {
-		let logger4Node = AllTests.logger4Node;
+	testGroupDelegate(groupName, inputIndex, logger) {
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		let passed = [];
 		let failed = [];
-		for (var i = 0; i < AllTests.TEST_INPUT[0].length; i++) {
-			var input = AllTests.TEST_INPUT[0][i];
+		for (var i = 0; i < AllTests.TEST_INPUT[inputIndex].length; i++) {
+			var input = AllTests.TEST_INPUT[inputIndex][i];
 			let expected;
 			switch(i) {
 			case 0:
-				logger4Node.group();
-				logger4Node.log(input);
-				expected = undefined;
+				if (groupName)
+					logger.group(groupName);
+				else
+					logger.group();
+				logger.log(input);
+				expected = groupName;
 				break;
 			case 1:
-				logger4Node.log(input);
-				logger4Node.groupEnd();
+				logger.log(input);
+				logger.groupEnd();
 				expected = null;
 				break;
 			}
@@ -52,16 +54,21 @@ class AllTests {
 		return new TestResults(passed, failed);
 	}
 
+	testGroupWithoutName() {
+		return this.testGroupDelegate(undefined, 0, AllTests.logger4Node);
+	}
+
+	testNamedGroup() {
+		const GROUP_NAME = "Named (& nested) group";
+		return this.testGroupDelegate(GROUP_NAME, 3, AllTests.logger);
+	}
+
 	testLogger4Node() { 
 		let logger4Node = AllTests.logger4Node;
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		let logger4NodeWithName = AllTests.logger4NodeWithName;
 		let logger4NodeWithNameWithTimeStamp = AllTests.logger4NodeWithNameWithTimeStamp;
 		let logger4NodeWithLevelIndicator = AllTests.logger4NodeWithLevelIndicator;
-		let loggerWithLevelIndicator = AllTests.loggerWithLevelIndicator;
-		let loggerWithTimestamp = AllTests.loggerWithTimestamp;
-		let loggerWithFullPrefix = AllTests.loggerWithFullPrefix;
-		let logger = AllTests.logger;
 
 		logger4Node.group("Logger4Node group");
 		let results = this.testGroupWithoutName();
@@ -69,9 +76,7 @@ class AllTests {
 		let failed = results.getFailed();
 		for (var i = 0; i < AllTests.TEST_INPUT[1].length; i++) {
 			var input = AllTests.TEST_INPUT[1][i];
-			let fn;
 			let expected, expectedPattern;
-			let timestampPatternStr = "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{2}:\\d{2}:\\d{2}";
 			let regexBasedTest = i == 2 || i == 5 || i == 6 || i == 7;
 			switch(i) {
 			case 0:
@@ -84,7 +89,7 @@ class AllTests {
 				break;
 			case 2:
 				logger4NodeWithNameWithTimeStamp.info(input);
-				expectedPattern = new RegExp(AllTests.INFO_TEST_LOGGER_NAME+ " \\(" +timestampPatternStr+ "\\): " +input);
+				expectedPattern = new RegExp(AllTests.INFO_TEST_LOGGER_NAME+ " \\(" +AllTests.TIMESTAMP_PATTERN_STR+ "\\): " +input);
 				break;
 			case 3:
 				if (logger4NodeWithNameWithTimeStamp.isDebugEnabled())
@@ -95,33 +100,12 @@ class AllTests {
 				logger4NodeWithLevelIndicator.all(input);
 				expected = "A> " +input;
 				break;
-			case 5:
-				loggerWithLevelIndicator.group("Logger group");
-				loggerWithLevelIndicator.all(input);
-				expectedPattern = new RegExp("A> " +timestampPatternStr+ ": " +input);
-				break;
-			case 6:
-				loggerWithTimestamp.debug(input);
-				expectedPattern = new RegExp('^' +timestampPatternStr+ ": " +input);
-				break; // TODO: add 2 tests: group with name assert & groupEnd with name reset assert
-			case 7:
-				if (loggerWithFullPrefix.isDebugEnabled())
-					loggerWithFullPrefix.debug(input);
-				expectedPattern = new RegExp("^D> " +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +timestampPatternStr+ "\\): " +input);
-				break;
-			case 8:
-				if (logger.isTraceEnabled())
-					logger.trace(input);
-				expected = null;
-				break;
 			}
 			let output = consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
 				passed.push(i);
-				if (i == 3 || i == 8) {
-					logger4Node.debug("no message for " +(i == 3 ? "DEBUG" : "TRACE") + " on INFO logger for: " +input);
-					if (i == 8)	
-						logger.groupEnd();
+				if (i == 3) {
+					logger4Node.debug("no message for " + "DEBUG" + " on INFO logger for: " +input);
 				} else if (i == 4)
 					logger4Node.groupEnd();
 				this.ok();
@@ -134,6 +118,75 @@ class AllTests {
 		return results;
 	}
 
+	testLoggerDelegate(inputIndex, addToSubIndex) { 
+		let consoleInterceptor = AllTests.consoleInterceptor;
+		let loggerWithLevelIndicator = AllTests.loggerWithLevelIndicator;
+		let loggerWithTimestamp = AllTests.loggerWithTimestamp;
+		let loggerWithFullPrefix = AllTests.loggerWithFullPrefix;
+		let logger = AllTests.logger;
+
+		let passed = [];
+		let failed = [];
+		for (var j = 0; j < AllTests.TEST_INPUT[inputIndex].length; j++) {
+			var input = AllTests.TEST_INPUT[inputIndex][j];
+			let expected, expectedPattern;
+			let i = j + addToSubIndex;
+			let regexBasedTest = i == 0 || i == 1 || i == 2;
+			switch(i) {
+			case 0:
+				loggerWithLevelIndicator.all(input);
+				expectedPattern = new RegExp("A> " +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
+				break;
+			case 1:
+				loggerWithTimestamp.debug(input);
+				expectedPattern = new RegExp('^' +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
+				break; // TODO: add 2 tests: group with name assert & groupEnd with name reset assert
+			case 2:
+				if (loggerWithFullPrefix.isDebugEnabled())
+					loggerWithFullPrefix.debug(input);
+				expectedPattern = new RegExp("^D> " +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +AllTests.TIMESTAMP_PATTERN_STR+ "\\): " +input);
+				break;
+			case 3:
+				if (logger.isTraceEnabled())
+					logger.trace(input);
+				expected = null;
+				break;
+			}
+			let output = consoleInterceptor.getLastMessage();
+			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
+				passed.push(i);
+				if (i == 3) {
+					logger.debug("no message for " + "TRACE" + " on INFO logger for: " +input);
+					logger.groupEnd();
+				}
+				this.ok();
+			} else {
+				let f = new TestFailure(input, expected, output);
+				failed.push(this.handleFailure(f));
+			}
+			Logger4Node.cursor.reset();
+		}
+		let results = new TestResults(passed, failed); 
+		return results;
+	}
+
+	testLogger() { 
+		AllTests.logger.group("Logger group");
+		let results = this.testLoggerDelegate(2, 0);
+		let groupTestResults = this.testNamedGroup();
+		results.merge(groupTestResults);
+		let results2 = this.testLoggerDelegate(4, AllTests.TEST_INPUT[2].length);
+		results.merge(results2);
+		return results;
+	}
+
+	testLoggers() {
+		let results = allTests.testLogger4Node();
+		let results2 = allTests.testLogger();
+		results.merge(results2);
+		return results;
+	}
+	
 	ok() {
 		Logger4Node.cursor.green().write("✓ \n").reset();
 	}
@@ -179,10 +232,13 @@ AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_N
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
+AllTests.defineReadOnlyProperty("TIMESTAMP_PATTERN_STR",  "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{2}:\\d{2}:\\d{2}");
+
+const GROUP_END_TEST_STRING = "Grouping test: .groupEnd() call passed on OK.";
 AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	[
 	"Grouping test: no group name in console when no group name passed in as param (i.e., group name is undefined).", 
-	"Grouping test: .groupEnd() call passed on OK." 
+	GROUP_END_TEST_STRING
 	],
 	[
 	"Error test with named Logger4Node with prefix skipped", 
@@ -190,14 +246,22 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	"Info test with named Logger4Node with timestamp",
 	"Debug test with named Logger4Node with timestamp and with level conditional",
 	"All test with Logger4Node with level indicator",
+	],
+	[
 	"All test with Logger with timestamp & level indicator",
 	"All test with Logger with timestamp",
+	],
+	[
+	"Grouping test: group name is passed on OK if passed in as param.", 
+	GROUP_END_TEST_STRING
+	],
+	[
 	"All test with named Logger with timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional"
 	]
 ]
 );
 let allTests = new AllTests();
-let passedFailed = allTests.testLogger4Node();
-allTests.summarize(passedFailed);
+let results = allTests.testLoggers();
+allTests.summarize(results);
 
