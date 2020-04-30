@@ -225,7 +225,8 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 				fn = console.log;
 			fn(mesaj);
 		}
-		return notOff;
+		if (!notOff)
+			return false;
 	}
 
 	this.debug = function(text) {

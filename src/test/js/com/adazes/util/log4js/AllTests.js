@@ -128,16 +128,16 @@ class AllTests {
 			let expected, expectedPattern;
 			let i = j + addToSubIndex;
 			let regexBasedTest = i == 0 || i == 1 || i == 2;
-			let output; 
+			let output, returned;
 			switch(i) {
 			case 0:
-				AllTests.loggerWithLevelIndicator.all(input);
+				returned = AllTests.loggerWithLevelIndicator.all(input);
 				expectedPattern = new RegExp("A> " +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
 				break;
 			case 1:
-				AllTests.loggerWithTimestamp.debug(input);
+				returned = AllTests.loggerWithTimestamp.debug(input);
 				expectedPattern = new RegExp('^' +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
-				break; // TODO: add 2 tests: group with name assert & groupEnd with name reset assert
+				break;
 			case 2:
 				if (AllTests.loggerWithFullPrefix.isDebugEnabled())
 					AllTests.loggerWithFullPrefix.debug(input);
@@ -154,13 +154,13 @@ class AllTests {
 			}
 			if (output == undefined)
 				output = consoleInterceptor.getLastMessage();
-			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
+			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output) && (returned == undefined || i > 1))) {
 				passed.push(i);
 				if (i == 3 || i == 4)
 					logger.debug("no message for " + (i == 3 ? "TRACE" : "INFO") + " on " +(i == 3 ? "INFO" : "OFF")+ " logger for: " +input);
 				this.ok();
 			} else {
-				let f = new TestFailure(input, expected, output);
+				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
 				failed.push(this.handleFailure(f));
 			}
 			Logger4Node.cursor.reset();
@@ -249,15 +249,15 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	"All test with Logger4Node with level indicator",
 	],
 	[
-	"All test with Logger with timestamp & level indicator",
-	"All test with Logger with timestamp",
+	"All test with Logger with timestamp & level indicator with verification of return value of undefined",
+	"All test with Logger with timestamp with verification of return value of undefined",
 	],
 	[
 	"Grouping test: group name is passed on OK if passed in as param.", 
 	GROUP_END_TEST_STRING
 	],
 	[
-	"All test with named Logger with timestamp, & level indicator: also testing level indicator being call-specific",
+	"All test w/ named Logger w/ timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional",
 	"Info test with named Logger with level of OFF"
 	]
