@@ -20,37 +20,37 @@ var ConsoleInterceptor = function() {
 	}
 
 	this.fatal = function(s) {
-		origMethods.error(s);
+		origMethods.error.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.error = function(s) {
-		origMethods.error(s);
+		origMethods.error.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.warn = function(s) { //		console.log("overridden warn:");
-		origMethods.warn(s);
+		origMethods.warn.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.info = function(s) {
-		origMethods.info(s);
+		origMethods.info.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.debug = function(s) {
-		origMethods.debug(s);
+		origMethods.debug.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.trace = function(s) {
-		origMethods.trace(s);
+		origMethods.trace.apply(console, arguments);
 		lastMessage = s;
 	}
 
 	this.all = function(s) {
-		origMethods.all(s);
+		origMethods.all.apply(console, arguments);
 		lastMessage = s;
 	}
 
