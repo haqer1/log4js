@@ -6,6 +6,7 @@ import * as logging from "./Logger.js";
  * @param	isim		Logger name
  * @param	loggingLevel	Logging level
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
+ * @author Reşat SABIQ
  */
 var Logger4Node = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
 	logging.Logger.call(this, isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation);
@@ -59,16 +60,18 @@ Logger4Node.prototype = Object.create(logging.Logger.prototype, {
 	fatal: {
 		value: function(text) {
 			this.decorateErrorOutput(true);
-			logging.Logger.prototype.fatal.apply(this, arguments);
+			var result = logging.Logger.prototype.fatal.apply(this, arguments);
 			this.decorateErrorOutput(false);
+			return result;
 		},
 		writable: false
 	},
 	error: {
 		value: function(text) {
 			this.decorateErrorOutput(true);
-			logging.Logger.prototype.error.apply(this, arguments);
+			var result = logging.Logger.prototype.error.apply(this, arguments);
 			this.decorateErrorOutput(false);
+			return result;
 		},
 		writable: false
 	},
@@ -76,9 +79,10 @@ Logger4Node.prototype = Object.create(logging.Logger.prototype, {
 		value: function(text) {
 			if (Logger4Node.PROCESS_STDOUT_WRITABLE)
 				Logger4Node.cursor.cyan();
-			logging.Logger.prototype.warn.apply(this, arguments);
+			var result = logging.Logger.prototype.warn.apply(this, arguments);
 			if (Logger4Node.PROCESS_STDOUT_WRITABLE)
 				Logger4Node.cursor.reset();
+			return result;
 		},
 		writable: false
 	},
@@ -86,9 +90,10 @@ Logger4Node.prototype = Object.create(logging.Logger.prototype, {
 		value: function(text) {
 			if (Logger4Node.PROCESS_STDOUT_WRITABLE)
 				Logger4Node.cursor.darkblue();
-			logging.Logger.prototype.info.apply(this, arguments);
+			var result = logging.Logger.prototype.info.apply(this, arguments);
 			if (Logger4Node.PROCESS_STDOUT_WRITABLE)
 				Logger4Node.cursor.reset();
+			return result;
 		},
 		writable: false
 	}
