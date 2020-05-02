@@ -345,7 +345,7 @@ Object.defineProperty(Logger, "prepareArguments", {
 
 Object.defineProperty(Logger.prototype, "fatal", {
 	value: function(text) {
-		this.logl(Level.FATAL, text);
+		return Logger.prototype.logl.apply(this, Logger.prepareArguments(Level.FATAL, arguments));
 	},
 	writable: false
 });

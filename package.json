@@ -1,7 +1,7 @@
 {
   "name": "log4js",
   "version": "1.0.0",
-  "description": "a Logger implementation for JS (inspired by log4j)",
+  "description": "a simple, very light-weight Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
     "build": "rollup --config rollup.config.js",
