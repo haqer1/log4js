@@ -8,8 +8,9 @@ import TestResults from "../TestResults.js";
 import TestFailure from "../TestFailure.js";
 
 /*
- * ES6 is not good enough for real OOP due to lack of support for private variables.
- * But for test class it's kind of OK to use it (barely).
+ * ES6 seems to not be good enough for real OOP due to lack of support for private variables & methods.
+ * But at least for a test class it's kind of OK to use it (barely).
+ * @author Reşat SABIQ
  */
 class AllTests { 
 	static defineReadOnlyProperty(name, value) {
@@ -17,7 +18,6 @@ class AllTests {
 			value: value,
 			writable: false, enumerable: false, configurable: false
 		});
-
 	}
 
 	testGroupDelegate(groupName, inputIndex, logger) {
@@ -113,6 +113,8 @@ class AllTests {
 			}
 			Logger4Node.cursor.reset();
 		}
+		var results2 = this.testLoggerFormattingDelegate(true);
+		results.merge(results2);
 		logger4Node.groupEnd();
 		return results;
 	}
@@ -132,7 +134,7 @@ class AllTests {
 			switch(i) {
 			case 0:
 				returned = AllTests.loggerWithLevelIndicator.all(input);
-				expectedPattern = new RegExp("A> " +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
+				expectedPattern = new RegExp(Level.ALL.ABBREVIATION + Level.ABBREVIATION_SUFFIX + ' ' +AllTests.TIMESTAMP_PATTERN_STR+ ": " +input);
 				break;
 			case 1:
 				returned = AllTests.loggerWithTimestamp.debug(input);
@@ -141,7 +143,7 @@ class AllTests {
 			case 2:
 				if (AllTests.loggerWithFullPrefix.isDebugEnabled())
 					AllTests.loggerWithFullPrefix.debug(input);
-				expectedPattern = new RegExp("^D> " +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +AllTests.TIMESTAMP_PATTERN_STR+ "\\): " +input);
+				expectedPattern = new RegExp(Level.DEBUG.ABBREVIATION + Level.ABBREVIATION_SUFFIX + ' ' +AllTests.FULL_PREFIX_TEST_LOGGER_NAME+ " \\(" +AllTests.TIMESTAMP_PATTERN_STR+ "\\): " +input);
 				break;
 			case 3:
 				if (logger.isTraceEnabled())
@@ -165,8 +167,40 @@ class AllTests {
 			}
 			Logger4Node.cursor.reset();
 		}
-		if (inputIndex == 4)
+		var results = new TestResults(passed, failed);
+		if (inputIndex == 4) {
+			var results2 = this.testLoggerFormattingDelegate(false);
+			results.merge(results2);
 			logger.groupEnd();
+		}
+		return results;
+	}
+
+	testLoggerFormattingDelegate(forNode) { 
+		const INPUT_INDEX = 5;
+		let consoleInterceptor = AllTests.consoleInterceptor;
+		let logger = forNode ? AllTests.logger4Node : AllTests.logger;
+
+		let passed = [];
+		let failed = [];
+		logger.group("Formatting group (for Node: " +forNode+ ')');
+		var inputOutput = AllTests.TEST_INPUT[INPUT_INDEX];
+		var methods = ["error", "warn", "info", "debug"];
+		for (var i = 0; i < inputOutput.length; i++) {
+			var params = inputOutput[i][0];
+	//		console.log("params: " +params+ " " +params.length);
+			let output = (forNode ? Logger4Node : Logger).prototype[methods[i]].apply(logger, params);
+			let expected = inputOutput[i][1][0];
+			if (output == expected) {
+				passed.push(INPUT_INDEX);
+				this.ok();
+			} else {
+				let f = new TestFailure(params, expected, output);
+				failed.push(this.handleFailure(f));
+			}
+			Logger4Node.cursor.reset();
+		}
+		logger.groupEnd();
 		return new TestResults(passed, failed);
 	}
 
@@ -209,8 +243,10 @@ class AllTests {
 		logger4Node.log("-----------------------------------------------------------");
 		let passedCount = results.getPassed().length;
 		let testsCount = 0;
-		for (let i = 0; i < TEST_INPUT.length; i++)
-			testsCount += TEST_INPUT[i].length;
+		for (let i = 0; i < TEST_INPUT.length; i++) {
+			var size = TEST_INPUT[i].length;
+			testsCount += i == 5 ? size*2 : size;
+		}
 		var ok = results.getFailed().length == 0;
 		if (ok)
 			Logger4Node.cursor.green();
@@ -233,7 +269,7 @@ AllTests.defineReadOnlyProperty("loggerWithLevelOfOFF", new Logger(AllTests.ALL_
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
-AllTests.defineReadOnlyProperty("TIMESTAMP_PATTERN_STR",  "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{2}:\\d{2}:\\d{2}");
+AllTests.defineReadOnlyProperty("TIMESTAMP_PATTERN_STR",  "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{1,2}:\\d{2}:\\d{2}");
 
 const GROUP_END_TEST_STRING = "Grouping test: .groupEnd() call passed on OK.";
 AllTests.defineReadOnlyProperty("TEST_INPUT", [
@@ -246,11 +282,11 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	"Warn test with named Logger4Node",
 	"Info test with named Logger4Node with timestamp",
 	"Debug test with named Logger4Node with timestamp and with level conditional",
-	"All test with Logger4Node with level indicator",
+	"All test with Logger4Node with level indicator"
 	],
 	[
 	"All test with Logger with timestamp & level indicator with verification of return value of undefined",
-	"All test with Logger with timestamp with verification of return value of undefined",
+	"All test with Logger with timestamp with verification of return value of undefined"
 	],
 	[
 	"Grouping test: group name is passed on OK if passed in as param.", 
@@ -260,6 +296,24 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	"All test w/ named Logger w/ timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional",
 	"Info test with named Logger with level of OFF"
+	],
+	[
+		[
+			[ "Formatting %s: %d", "test", 1 ],
+			[ "Formatting test: 1" ]
+		],
+		[
+			[ "Formatting %s with unused param: %d %s", "test", 2 ],
+			[ "Formatting test with unused param: 2 %s" ]
+		],
+		[
+			[ "Formatting %s with excessive param: %d", "test", 3, "(unmapped param)" ],
+			[ "Formatting test with excessive param: 3 (unmapped param)" ]
+		],
+		[
+			[ "Formatting %s with a sign that doesn't consume an arg: %f (100%% correctness seeked)", "test", 4.01 ],
+			[ "Formatting test with a sign that doesn't consume an arg: 4.01 (100% correctness seeked)" ]
+		]
 	]
 ]
 );
