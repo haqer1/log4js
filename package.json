@@ -4,7 +4,7 @@
   "description": "a Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
-    "build": "rollup --config",
+    "build": "rollup --config rollup.config.js",
     "test": "node -r esm src/test/js/com/adazes/util/log4js/AllTests"
   },
   "keywords": [
@@ -20,9 +20,10 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "esm": "^3.2.25",
     "@rollup/plugin-commonjs": "^11.1.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "rollup": "^2.7.1"
+    "esm": "^3.2.25",
+    "rollup": "^2.7.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-uglify": "^6.0.4"
   }
 }
