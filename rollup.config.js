@@ -40,6 +40,7 @@ export default [
       }
     ],
     plugins: [
+//        commonjs(), 
         replace({ // seems better than auto-generating a couple of files, etc.
             replaces: {
 //                "import {format} from \"util\";": "//deleted"
@@ -55,27 +56,23 @@ export default [
     ]
 }
 /* Works partially: leaves util.format while util is not defined (only function is imported, & importing everything would be wasteful)
-{
+,{
     input: "src/main/js/index.js",
     output: [
       {
         file: "dist/" +ARTIFACT_NAME+ "-for-browsers.2.js",
         format: "umd",
         name: ARTIFACT_NAME
-      }
-    ],
-    plugins: [externalGlobals({util:"util"})]
-},
-{
-    input: "src/main/js/index.js",
-    output: [
+      },
       {
         file: "dist/" +ARTIFACT_NAME+ "-for-browsers.2.min.js",
         format: "umd",
         name: ARTIFACT_NAME
+        plugins: [uglify()]
       }
     ],
-    plugins: [externalGlobals({util:"util"}),uglify()]
-}*/
+    plugins: [externalGlobals({util:"util"})]
+}
+*/
 ]
 ;
