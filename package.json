@@ -24,6 +24,7 @@
     "esm": "^3.2.25",
     "rollup": "^2.7.1",
     "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-uglify": "^6.0.4"
   }
 }
