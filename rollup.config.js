@@ -6,17 +6,21 @@ import replace from 'rollup-plugin-re';
 //import ignoreImport from 'rollup-plugin-ignore-import';
 
 const ARTIFACT_NAME = "log4js";
+const JS_EXT = ".js";
+const INDEX_JS = "src/main/js/index" +JS_EXT;
+const FOR_BROWSERS_SUFFIX = "-for-browsers";
+const MIN_JS_EXT = ".min" +JS_EXT;
 export default [
 {
-    input: "src/main/js/index.js",
+    input: INDEX_JS,
     output: [
       {
-        file: "dist/" +ARTIFACT_NAME+ ".js",
+        file: "dist/" + ARTIFACT_NAME + JS_EXT,
         format: "umd",
         name: ARTIFACT_NAME
       },
       {
-        file: "dist/" +ARTIFACT_NAME+ ".min.js",
+        file: "dist/" + ARTIFACT_NAME + MIN_JS_EXT,
         format: "umd",
         name: ARTIFACT_NAME,
         plugins: [uglify()]
@@ -25,15 +29,15 @@ export default [
     plugins: [commonjs(), nodeBuiltins()]
 },
 {
-    input: "src/main/js/index.js",
+    input: INDEX_JS,
     output: [
       {
-        file: "dist/" +ARTIFACT_NAME+ "-for-browsers.js",
+        file: "dist/" + ARTIFACT_NAME + FOR_BROWSERS_SUFFIX + JS_EXT,
         format: "umd",
         name: ARTIFACT_NAME
       },
       {
-        file: "dist/" +ARTIFACT_NAME+ "-for-browsers.min.js",
+        file: "dist/" + ARTIFACT_NAME + FOR_BROWSERS_SUFFIX + MIN_JS_EXT,
         format: "umd",
         name: ARTIFACT_NAME,
         plugins: [uglify()]
