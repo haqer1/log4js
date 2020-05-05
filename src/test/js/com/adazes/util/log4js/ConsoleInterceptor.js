@@ -17,6 +17,7 @@ var ConsoleInterceptor = function() {
 				global.console[methodName] = bu[methodName];
 			}
 		}
+		origMethods["log"] = global.console["log"];
 	}
 
 	this.fatal = function(s) {
@@ -51,6 +52,11 @@ var ConsoleInterceptor = function() {
 
 	this.all = function(s) {
 		origMethods.all.apply(console, arguments);
+		lastMessage = s;
+	}
+
+	this.log = function(s) {
+		origMethods.log.apply(console, arguments);
 		lastMessage = s;
 	}
 

@@ -3,13 +3,13 @@ import * as logging from "./Logger.js";
 /**
  * Logs to process stream using Node's process api, including support for coloring according to level.
  * 
- * @param	isim		Logger name
+ * @param	configOrName	Logger name
  * @param	loggingLevel	Logging level
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
  * @author Reşat SABIQ
  */
-var Logger4Node = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
-	logging.Logger.call(this, isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation);
+var Logger4Node = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, skipName, useLevelAbbreviation) {
+	logging.Logger.call(this, configOrName, loggingLevel, skipPrefix, skipTimestamp, skipName, useLevelAbbreviation);
 
 	this.decorateErrorOutput = function(start) {
 		if (start) {

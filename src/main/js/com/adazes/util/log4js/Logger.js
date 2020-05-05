@@ -154,28 +154,39 @@ Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
 /**
  * Logs to navigator or Node.js console, using level-specific methods. Use level-checks to log conditionally.
  * 
- * @param	isim		Logger name
- * @param	loggingLevel	Logging level
+ * @param	configOrName	Logger name
+ * @param	loggingLevel	Logging level (default: INFO)
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
  * @author Reşat SABIQ
  */
-var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, prependLevelAbbreviation) {
-
-	var level = loggingLevel ? loggingLevel : Level.INFO;
-	// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
-	var formatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
+var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, skipName, useLevelAbbreviation, formatter) {
+	var config = typeof(configOrName) === "object" ? configOrName : {
+		name: configOrName,
+		level: loggingLevel,
+		skipPrefix: skipPrefix,
+		skipTimestamp: skipTimestamp,
+		skipName: skipName,
+		useLevelAbbreviation: useLevelAbbreviation,
+		formatter: formatter
+	};
+	if (!config.level)
+		config.level = Level.INFO;
+	if (!config.formatter)
+		// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
+		config.formatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
 		  year: 'numeric', month: 'numeric', day: 'numeric',
 		  hour: 'numeric', minute: 'numeric', second: 'numeric',
 		  hour12: false
 		}) : undefined;
 
-	this.getName = function() { return isim }
-	this.getLevel = function() { return level }
-	this.isSkippingPrefix = function() { return skipPrefix }
-	this.isSkippingTimestamp = function() { return skipTimestamp }
-	this.isSkippingName = function() { return skipName }
-	this.isPrependingLevelAbbreviation = function() { return prependLevelAbbreviation }
-	this.getDateTimeFormatter = function() { return formatter }
+	this.getName = function() { return config.name }
+	this.getLevel = function() { return config.level }
+	this.isSkippingPrefix = function() { return config.skipPrefix }
+	this.isSkippingTimestamp = function() { return config.skipTimestamp }
+	this.isSkippingName = function() { return config.skipName }
+	this.isUsingLevelAbbreviation = function() { return config.useLevelAbbreviation }
+
+	this.getDateTimeFormatter = function() { return config.formatter }
 
 	/**
 	 * @param	text	message to log
@@ -186,31 +197,31 @@ var Logger = function(isim, loggingLevel, skipPrefix, skipTimestamp, skipName, p
 	}
 	
 	this.isDebugEnabled = function() {
-		return level.ORDINAL >= Level.DEBUG.ORDINAL;
+		return config.level.ORDINAL >= Level.DEBUG.ORDINAL;
 	}
 	
 	this.isInfoEnabled = function() {
-		return level.ORDINAL >= Level.INFO.ORDINAL;
+		return config.level.ORDINAL >= Level.INFO.ORDINAL;
 	}
 	
 	this.isWarnEnabled = function() {
-		return level.ORDINAL >= Level.WARN.ORDINAL;
+		return config.level.ORDINAL >= Level.WARN.ORDINAL;
 	}
 	
 	this.isErrorEnabled = function() {
-		return level.ORDINAL >= Level.ERROR.ORDINAL;
+		return config.level.ORDINAL >= Level.ERROR.ORDINAL;
 	}
 	
 	this.isFatalEnabled = function() {
-		return level.ORDINAL >= Level.FATAL.ORDINAL;
+		return config.level.ORDINAL >= Level.FATAL.ORDINAL;
 	}
 	
 	this.isTraceEnabled = function() {
-		return level.ORDINAL >= Level.TRACE.ORDINAL;
+		return config.level.ORDINAL >= Level.TRACE.ORDINAL;
 	}
 	
 	this.isAllEnabled = function() {
-		return level.ORDINAL >= Level.ALL.ORDINAL;
+		return config.level.ORDINAL >= Level.ALL.ORDINAL;
 	}
 
 	this.group = function(name) {
@@ -259,7 +270,7 @@ Object.defineProperty(Logger.prototype, "logl", {
 		var off = this.getLevel() == Level.OFF;
 		if (!off) {
 			var mesaj;
-			if (!this.isSkippingPrefix() && this.isPrependingLevelAbbreviation())
+			if (!this.isSkippingPrefix() && this.isUsingLevelAbbreviation())
 				mesaj = messageLevel.ABBREVIATION + Level.ABBREVIATION_SUFFIX; 
 			if (!this.isSkippingPrefix() && !this.isSkippingName())
 				mesaj = mesaj ? mesaj+ ' ' +this.getName() : this.getName();

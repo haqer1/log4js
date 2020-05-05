@@ -129,7 +129,7 @@ class AllTests {
 			var input = AllTests.TEST_INPUT[inputIndex][j];
 			let expected, expectedPattern;
 			let i = j + addToSubIndex;
-			let regexBasedTest = i == 0 || i == 1 || i == 2;
+			let regexBasedTest = i == 0 || i == 1 || i == 2 || i == 5;
 			let output, returned;
 			switch(i) {
 			case 0:
@@ -153,10 +153,17 @@ class AllTests {
 			case 4:
 				output = AllTests.loggerWithLevelOfOFF.info(input);
 				expected = Level.OFF;
+				break;
+			case 5:
+				output = AllTests.loggerWithMsDateTimeFormatter.info(input);
+				expectedPattern = new RegExp("^AllTests \\((\\d{13,})\\): " +input);
 			}
 			if (output == undefined)
 				output = consoleInterceptor.getLastMessage();
-			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output) && (returned == undefined || i > 1))) {
+			if ((!regexBasedTest && output == expected) 
+					|| (regexBasedTest && expectedPattern.test(output) 
+							&& (returned == undefined || i > 1) 
+								&& i != 5 || Number.parseInt(expectedPattern.exec(output)[1]) > DT_FORMATTER_TEST_MS_SENTINEL)) {
 				passed.push(i);
 				if (i == 3 || i == 4)
 					logger.debug("no message for " + (i == 3 ? "TRACE" : "INFO") + " on " +(i == 3 ? "INFO" : "OFF")+ " logger for: " +input);
@@ -258,20 +265,28 @@ AllTests.defineReadOnlyProperty("INFO_TEST_LOGGER_NAME", "InfoTest");
 AllTests.defineReadOnlyProperty("ALL_TESTS_LOGGER_NAME", "AllTests");
 AllTests.defineReadOnlyProperty("FULL_PREFIX_TEST_LOGGER_NAME", "FullPrefixTest");
 AllTests.defineReadOnlyProperty("logger4Node", new Logger4Node(AllTests.ALL_TESTS_LOGGER_NAME, Level.INFO, true));
-AllTests.defineReadOnlyProperty("logger4NodeWithName", new Logger4Node(AllTests.WARNING_TEST_LOGGER_NAME, Level.INFO, false, true));
+AllTests.defineReadOnlyProperty("logger4NodeWithName", new Logger4Node({name: AllTests.WARNING_TEST_LOGGER_NAME, skipTimestamp: true}));
 AllTests.defineReadOnlyProperty("logger4NodeWithNameWithTimeStamp", new Logger4Node(AllTests.INFO_TEST_LOGGER_NAME, Level.INFO, false));
 AllTests.defineReadOnlyProperty("logger4NodeWithLevelIndicator", new Logger4Node(AllTests.ALL_TESTS_LOGGER_NAME, Level.ALL, false, true, true, true));
 AllTests.defineReadOnlyProperty("loggerWithLevelIndicator", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.ALL, false, false, true, true));
 AllTests.defineReadOnlyProperty("loggerWithTimestamp", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.DEBUG, false, false, true));
-AllTests.defineReadOnlyProperty("loggerWithFullPrefix", new Logger(AllTests.FULL_PREFIX_TEST_LOGGER_NAME, Level.ALL, false, false, false, true));
+AllTests.defineReadOnlyProperty("loggerWithFullPrefix", new Logger({
+	name: AllTests.FULL_PREFIX_TEST_LOGGER_NAME,
+	level: Level.ALL,
+	useLevelAbbreviation: true}));
 AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.INFO, true));
 AllTests.defineReadOnlyProperty("loggerWithLevelOfOFF", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.OFF, true));
+AllTests.defineReadOnlyProperty("loggerWithMsDateTimeFormatter", new Logger({
+	name: AllTests.ALL_TESTS_LOGGER_NAME,
+	formatter: { format: function(date) {return date.valueOf()}}}));
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
 AllTests.defineReadOnlyProperty("TIMESTAMP_PATTERN_STR",  "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{1,2}:\\d{2}:\\d{2}");
 
 const GROUP_END_TEST_STRING = "Grouping test: .groupEnd() call passed on OK.";
+const DT_FORMATTER_TEST_MS_SENTINEL = 1588665380753;
+
 AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	[
 	"Grouping test: no group name in console when no group name passed in as param (i.e., group name is undefined).", 
@@ -295,7 +310,8 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 	[
 	"All test w/ named Logger w/ timestamp, & level indicator: also testing level indicator being call-specific",
 	"Trace test with named Logger with level conditional",
-	"Info test with named Logger with level of OFF"
+	"Info test with named Logger with level of OFF",
+	"Info test with date-time formatter showing ms since epoch"
 	],
 	[
 		[
