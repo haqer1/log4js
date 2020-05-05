@@ -152,7 +152,7 @@ class AllTests {
 				break;
 			case 4:
 				output = AllTests.loggerWithLevelOfOFF.info(input);
-				expected = false;
+				expected = Level.OFF;
 			}
 			if (output == undefined)
 				output = consoleInterceptor.getLastMessage();

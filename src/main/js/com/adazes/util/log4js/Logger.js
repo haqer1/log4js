@@ -250,7 +250,9 @@ Object.defineProperty(Logger, "ENV_TEST", {
 
 /**
  * If more than 2 params are passed & env. is Node.js, formatting is done using util.format, otherwise the params are passed on to the relevant console method.
- * @return if Logger's level if OFF, then false, otherwise undefined (as JS consoles do by default) 
+ */
+/*
+ * @return During testing: if Logger's level if OFF, then OFF; else if arguments.length > 2, then formatted string logged; otherwise undefined (as JS consoles do by default)
  */
 Object.defineProperty(Logger.prototype, "logl", {
 	value: function(messageLevel, text) {
@@ -324,10 +326,10 @@ Object.defineProperty(Logger.prototype, "logl", {
 				fn(result);
 			}
 		}
-		if (off)
-			return false;
-		else if (arguments.length > 2) {
-			if (Logger.ENV_TEST)
+		if (Logger.ENV_TEST) {
+			if (off)
+				return Level.OFF;
+			if (arguments.length > 2)
 				return result; // while testing the resulting formatted strings are asserted
 		}
 	},
