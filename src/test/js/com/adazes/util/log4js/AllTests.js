@@ -344,3 +344,5 @@ let allTests = new AllTests();
 let results = allTests.testLoggers();
 allTests.summarize(results);
 
+let failed = results.getFailed();
+process.exit(failed ? failed.length : 0);
