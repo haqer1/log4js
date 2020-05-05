@@ -278,7 +278,7 @@ AllTests.defineReadOnlyProperty("logger", new Logger(AllTests.ALL_TESTS_LOGGER_N
 AllTests.defineReadOnlyProperty("loggerWithLevelOfOFF", new Logger(AllTests.ALL_TESTS_LOGGER_NAME, Level.OFF, true));
 AllTests.defineReadOnlyProperty("loggerWithMsDateTimeFormatter", new Logger({
 	name: AllTests.ALL_TESTS_LOGGER_NAME,
-	formatter: { format: function(date) {return date.valueOf()}}}));
+	dateFormatter: { format: function(date) {return date.valueOf()}}}));
 
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 

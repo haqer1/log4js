@@ -156,10 +156,14 @@ Object.defineProperty(Level, "ALL_LEVELS_ARRAY", {
  * 
  * @param	configOrName	Logger name
  * @param	loggingLevel	Logging level (default: INFO)
+ * @param	skipPrefix		Optional boolean to skip prepending prefix (name & timestamp)
  * @param	skipTimestamp	Optional boolean to skip prepending timestamp
+ * @param	skipName		Optional boolean to skip prepending name
+ * @param	useLevelAbbreviation	Optional boolean to prepend level abbreviation to messages
+ * @param	dateFormatter	Optional object with .format(date) for custom date-time formatting
  * @author Reşat SABIQ
  */
-var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, skipName, useLevelAbbreviation, formatter) {
+var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, skipName, useLevelAbbreviation, dateFormatter) {
 	var config = typeof(configOrName) === "object" ? configOrName : {
 		name: configOrName,
 		level: loggingLevel,
@@ -167,13 +171,13 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 		skipTimestamp: skipTimestamp,
 		skipName: skipName,
 		useLevelAbbreviation: useLevelAbbreviation,
-		formatter: formatter
+		dateFormatter: dateFormatter
 	};
 	if (!config.level)
 		config.level = Level.INFO;
-	if (!config.formatter)
+	if (!config.dateFormatter)
 		// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
-		config.formatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
+		config.dateFormatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
 		  year: 'numeric', month: 'numeric', day: 'numeric',
 		  hour: 'numeric', minute: 'numeric', second: 'numeric',
 		  hour12: false
@@ -186,7 +190,7 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 	this.isSkippingName = function() { return config.skipName }
 	this.isUsingLevelAbbreviation = function() { return config.useLevelAbbreviation }
 
-	this.getDateTimeFormatter = function() { return config.formatter }
+	this.getDateTimeFormatter = function() { return config.dateFormatter }
 
 	/**
 	 * @param	text	message to log
