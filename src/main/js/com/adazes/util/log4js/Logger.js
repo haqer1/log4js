@@ -309,28 +309,25 @@ Object.defineProperty(Logger.prototype, "logl", {
 			}
 			if (!fn) 
 				fn = console.log;
-			var result;
+			var mesajFormatted;
 			if (arguments.length > 2) {
 				var args = new Array(arguments.length-1); //Array.prototype.slice.call(arguments, 1);
-				for (var i = 1; i < args.length; i++) {
+				for (var i = 1; i < args.length; i++)
 					args[i] = arguments[i+1];
-				}
 				args[0] = mesaj;
 				if (Logger.ENV_NODE) {
-					result = format.apply(null, args);
-					fn(result);
+					mesajFormatted = format.apply(null, args);
+					fn(mesajFormatted);
 				} else
 					fn.apply(console, args);
-			} else {
-				result = mesaj;
-				fn(result);
-			}
+			} else
+				fn(mesaj);
 		}
 		if (Logger.ENV_TEST) {
 			if (off)
 				return Level.OFF;
 			if (arguments.length > 2)
-				return result; // while testing the resulting formatted strings are asserted
+				return mesajFormatted; // while testing the resulting formatted strings are asserted
 		}
 	},
 	writable: false
