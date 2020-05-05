@@ -2,7 +2,7 @@
 "use strict";
 
 import Logger4Node from "../../../../../../main/js/com/adazes/util/log4js/Logger4Node.js";
-import {Level/**/, Logger} from "../../../../../../main/js/com/adazes/util/log4js/Logger.js";
+import {Level, Logger} from "../../../../../../main/js/com/adazes/util/log4js/Logger.js";
 import ConsoleInterceptor from "./ConsoleInterceptor.js";
 import TestResults from "../TestResults.js";
 import TestFailure from "../TestFailure.js";
@@ -24,8 +24,8 @@ class AllTests {
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		let passed = [];
 		let failed = [];
-		for (var i = 0; i < AllTests.TEST_INPUT[inputIndex].length; i++) {
-			var input = AllTests.TEST_INPUT[inputIndex][i];
+		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[inputIndex].length; i++) {
+			var input = AllTests.TEST_INPUT_OUTPUT[inputIndex][i];
 			let expected;
 			switch(i) {
 			case 0:
@@ -48,7 +48,7 @@ class AllTests {
 				this.ok();
 			} else {
 				let f = new TestFailure(input, expected, output);
-				failed.push(this.handleFailure(f));
+				this.handleFailure(f, failed);
 			}
 		}
 		return new TestResults(passed, failed);
@@ -65,17 +65,14 @@ class AllTests {
 
 	testLogger4Node() { 
 		let logger4Node = AllTests.logger4Node;
-		let consoleInterceptor = AllTests.consoleInterceptor;
-		let logger4NodeWithName = AllTests.logger4NodeWithName;
 		let logger4NodeWithNameWithTimeStamp = AllTests.logger4NodeWithNameWithTimeStamp;
-		let logger4NodeWithLevelIndicator = AllTests.logger4NodeWithLevelIndicator;
 
 		logger4Node.group("Logger4Node group");
 		let results = this.testGroupWithoutName();
 		let passed = results.getPassed();
 		let failed = results.getFailed();
-		for (var i = 0; i < AllTests.TEST_INPUT[1].length; i++) {
-			var input = AllTests.TEST_INPUT[1][i];
+		for (var i = 0; i < AllTests.TEST_INPUT_OUTPUT[1].length; i++) {
+			var input = AllTests.TEST_INPUT_OUTPUT[1][i];
 			let expected, expectedPattern;
 			let regexBasedTest = i == 2 || i == 5 || i == 6 || i == 7;
 			switch(i) {
@@ -84,7 +81,7 @@ class AllTests {
 				expected = input;
 				break;
 			case 1:
-				logger4NodeWithName.warn(input);
+				AllTests.logger4NodeWithName.warn(input);
 				expected = AllTests.WARNING_TEST_LOGGER_NAME+ ": " +input;
 				break;
 			case 2:
@@ -97,11 +94,11 @@ class AllTests {
 				expected = null;
 				break;
 			case 4:
-				logger4NodeWithLevelIndicator.all(input);
+				AllTests.logger4NodeWithLevelIndicator.all(input);
 				expected = Level.ALL.ABBREVIATION + Level.ABBREVIATION_SUFFIX + ' ' +input;
 				break;
 			}
-			let output = consoleInterceptor.getLastMessage();
+			let output = AllTests.consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) || (regexBasedTest && expectedPattern.test(output))) {
 				passed.push(i);
 				if (i == 3)
@@ -109,10 +106,9 @@ class AllTests {
 				this.ok();
 			} else {
 				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
-				failed.push(this.handleFailure(f));
+				this.handleFailure(f, failed);
 			}
-			if (AllTests.COLORING_ENABLED)
-				Logger4Node.cursor.reset();
+			this.resetCursor();
 		}
 		var results2 = this.testLoggerFormattingDelegate(true);
 		results.merge(results2);
@@ -121,13 +117,10 @@ class AllTests {
 	}
 
 	testLoggerDelegate(inputIndex, addToSubIndex) { 
-		let consoleInterceptor = AllTests.consoleInterceptor;
 		let logger = AllTests.logger;
-
-		let passed = [];
-		let failed = [];
-		for (var j = 0; j < AllTests.TEST_INPUT[inputIndex].length; j++) {
-			var input = AllTests.TEST_INPUT[inputIndex][j];
+		let results = new TestResults();
+		for (var j = 0; j < AllTests.TEST_INPUT_OUTPUT[inputIndex].length; j++) {
+			var input = AllTests.TEST_INPUT_OUTPUT[inputIndex][j];
 			let expected, expectedPattern;
 			let i = j + addToSubIndex;
 			let regexBasedTest = i == 0 || i == 1 || i == 2 || i == 5;
@@ -160,27 +153,27 @@ class AllTests {
 				expectedPattern = new RegExp("^AllTests \\((\\d{13,})\\): " +input);
 			}
 			if (output == undefined)
-				output = consoleInterceptor.getLastMessage();
+				output = AllTests.consoleInterceptor.getLastMessage();
 			if ((!regexBasedTest && output == expected) 
 					|| (regexBasedTest && expectedPattern.test(output) 
-							&& (returned == undefined || i > 1) 
-								&& i != 5 || Number.parseInt(expectedPattern.exec(output)[1]) > DT_FORMATTER_TEST_MS_SENTINEL)) {
-				passed.push(i);
+							&& (returned == undefined || i > 1) && i != 5 || Number.parseInt(expectedPattern.exec(output)[1]) > DT_FORMATTER_TEST_MS_SENTINEL)) {
+				results.getPassed().push(i);
 				if (i == 3 || i == 4)
 					logger.debug("no message for " + (i == 3 ? "TRACE" : "INFO") + " on " +(i == 3 ? "INFO" : "OFF")+ " logger for: " +input);
 				this.ok();
 			} else {
 				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
-				failed.push(this.handleFailure(f));
+				this.handleFailure(f, results.getFailed());
 			}
-			if (AllTests.COLORING_ENABLED)
-				Logger4Node.cursor.reset();
+			this.resetCursor();
 		}
-		var results = new TestResults(passed, failed);
+		return this.testLoggerFormattingAndMergeResultsIfNeeded(results, inputIndex);
+	}
+
+	testLoggerFormattingAndMergeResultsIfNeeded(results, inputIndex) {
 		if (inputIndex == 4) {
 			var results2 = this.testLoggerFormattingDelegate(false);
 			results.merge(results2);
-			logger.groupEnd();
 		}
 		return results;
 	}
@@ -193,7 +186,7 @@ class AllTests {
 		let passed = [];
 		let failed = [];
 		logger.group("Formatting group (for Node: " +forNode+ ')');
-		var inputOutput = AllTests.TEST_INPUT[INPUT_INDEX];
+		var inputOutput = AllTests.TEST_INPUT_OUTPUT[INPUT_INDEX];
 		var methods = ["error", "warn", "info", "debug"];
 		for (var i = 0; i < inputOutput.length; i++) {
 			var params = inputOutput[i][0];
@@ -205,10 +198,9 @@ class AllTests {
 				this.ok();
 			} else {
 				let f = new TestFailure(params, expected, output);
-				failed.push(this.handleFailure(f));
+				this.handleFailure(f, failed);
 			}
-			if (AllTests.COLORING_ENABLED)
-				Logger4Node.cursor.reset();
+			this.resetCursor();
 		}
 		logger.groupEnd();
 		return new TestResults(passed, failed);
@@ -219,7 +211,8 @@ class AllTests {
 		let results = this.testLoggerDelegate(2, 0);
 		let groupTestResults = this.testNamedGroup();
 		results.merge(groupTestResults);
-		let results2 = this.testLoggerDelegate(4, AllTests.TEST_INPUT[2].length);
+		let results2 = this.testLoggerDelegate(4, AllTests.TEST_INPUT_OUTPUT[2].length);
+		AllTests.logger.groupEnd();
 		results.merge(results2);
 		return results;
 	}
@@ -230,13 +223,18 @@ class AllTests {
 		results.merge(results2);
 		return results;
 	}
+
+	resetCursor() {
+		if (AllTests.COLORING_ENABLED)
+			Logger4Node.cursor.reset();
+	}
 	
 	ok() {
 		if (AllTests.COLORING_ENABLED)
 			Logger4Node.cursor.green().write("✓ \n").reset();
 	}
 
-	handleFailure(testFailure) {
+	handleFailure(testFailure, failuresArray) {
 		let logger4Node = AllTests.logger4Node;
 		let consoleInterceptor = AllTests.consoleInterceptor;
 		if (AllTests.COLORING_ENABLED)
@@ -246,17 +244,18 @@ class AllTests {
 		logger4Node.warn("\t=== actual: ===");
 		logger4Node.warn(testFailure.getActual());
 		consoleInterceptor.resetMessage();
-		return testFailure;
+
+		failuresArray.push(testFailure);
 	}
 
 	summarize(results) {
 		let logger4Node = AllTests.logger4Node;
-		const TEST_INPUT = AllTests.TEST_INPUT;
+		const TEST_INPUT_OUTPUT = AllTests.TEST_INPUT_OUTPUT;
 		logger4Node.log("-----------------------------------------------------------");
 		let passedCount = results.getPassed().length;
 		let testsCount = 0;
-		for (let i = 0; i < TEST_INPUT.length; i++) {
-			var size = TEST_INPUT[i].length;
+		for (let i = 0; i < TEST_INPUT_OUTPUT.length; i++) {
+			var size = TEST_INPUT_OUTPUT[i].length;
 			testsCount += i == 5 ? size*2 : size;
 		}
 		var ok = results.getFailed().length == 0;
@@ -264,6 +263,17 @@ class AllTests {
 			if (AllTests.COLORING_ENABLED)
 				Logger4Node.cursor.green();
 		logger4Node.log("# Passed: " +passedCount+ '/' +testsCount+ " (" +Math.round(passedCount * 100 / testsCount)+ "%)");
+	}
+
+	run() {
+		let results = allTests.testLoggers();
+		allTests.summarize(results);
+		allTests.exit(results);
+	}
+
+	exit(results) {
+		let failed = results.getFailed();
+		process.exit(failed ? failed.length : 0);
 	}
 }
 AllTests.defineReadOnlyProperty("WARNING_TEST_LOGGER_NAME", "WarningTest");
@@ -294,7 +304,7 @@ AllTests.defineReadOnlyProperty("COLORING_ENABLED", true);
 const GROUP_END_TEST_STRING = "Grouping test: .groupEnd() call passed on OK.";
 const DT_FORMATTER_TEST_MS_SENTINEL = 1588665380753;
 
-AllTests.defineReadOnlyProperty("TEST_INPUT", [
+AllTests.defineReadOnlyProperty("TEST_INPUT_OUTPUT", [
 	[
 	"Grouping test: no group name in console when no group name passed in as param (i.e., group name is undefined).", 
 	GROUP_END_TEST_STRING
@@ -341,8 +351,4 @@ AllTests.defineReadOnlyProperty("TEST_INPUT", [
 ]
 );
 let allTests = new AllTests();
-let results = allTests.testLoggers();
-allTests.summarize(results);
-
-let failed = results.getFailed();
-process.exit(failed ? failed.length : 0);
+allTests.run();

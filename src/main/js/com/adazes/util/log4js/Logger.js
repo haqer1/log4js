@@ -236,6 +236,33 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 	}
 
 	this.groupEnd = function() { console.groupEnd() }
+
+	this.functionForLevel = function(messageLevel) {
+		var fn;
+		switch (messageLevel) {
+		case Level.FATAL:
+		case Level.ERROR:
+			if (Logger.CONSOLE_ERROR_AVAILABLE)
+				fn = console.error;
+			break;
+		case Level.WARN:
+			fn = Logger.CONSOLE_WARN_AVAILABLE ? console.warn : console.error;
+			break;
+		case Level.INFO:
+			fn = console.info;
+			break;
+		case Level.DEBUG:
+		case Level.ALL:
+			if (Logger.CONSOLE_DEBUG_AVAILABLE)
+				fn = console.debug;
+			break;
+		case Level.TRACE:
+			fn = console.trace;
+		}
+		if (!fn) 
+			fn = console.log;
+		return fn
+	}
 };
 
 Object.defineProperty(Logger, "CONSOLE_ERROR_AVAILABLE", {
@@ -301,29 +328,7 @@ Object.defineProperty(Logger.prototype, "logl", {
 				mesaj += ' ' +text;
 			} else
 				mesaj = text;
-			var fn;
-			switch (messageLevel) {
-			case Level.FATAL:
-			case Level.ERROR:
-				if (Logger.CONSOLE_ERROR_AVAILABLE)
-					fn = console.error;
-				break;
-			case Level.WARN:
-				fn = Logger.CONSOLE_WARN_AVAILABLE ? console.warn : console.error;
-				break;
-			case Level.INFO:
-				fn = console.info;
-				break;
-			case Level.DEBUG:
-			case Level.ALL:
-				if (Logger.CONSOLE_DEBUG_AVAILABLE)
-					fn = console.debug;
-				break;
-			case Level.TRACE:
-				fn = console.trace;
-			}
-			if (!fn) 
-				fn = console.log;
+			var fn = this.functionForLevel(messageLevel);
 			var mesajFormatted;
 			if (arguments.length > 2) {
 				var args = new Array(arguments.length-1); //Array.prototype.slice.call(arguments, 1);
