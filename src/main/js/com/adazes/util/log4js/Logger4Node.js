@@ -2,6 +2,7 @@ import * as logging from "./Logger.js";
 
 /**
  * Logs to process stream using Node's process api, including support for coloring according to level.
+ * When logging without coloring is needed, Logger (parent class of Logger4Node) should be used.
  * 
  * @see	Logger
  * @author Reşat SABIQ

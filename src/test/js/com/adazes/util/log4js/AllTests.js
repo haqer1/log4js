@@ -111,7 +111,8 @@ class AllTests {
 				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
 				failed.push(this.handleFailure(f));
 			}
-			Logger4Node.cursor.reset();
+			if (AllTests.COLORING_ENABLED)
+				Logger4Node.cursor.reset();
 		}
 		var results2 = this.testLoggerFormattingDelegate(true);
 		results.merge(results2);
@@ -172,7 +173,8 @@ class AllTests {
 				let f = new TestFailure(input, regexBasedTest ? expectedPattern : expected, output);
 				failed.push(this.handleFailure(f));
 			}
-			Logger4Node.cursor.reset();
+			if (AllTests.COLORING_ENABLED)
+				Logger4Node.cursor.reset();
 		}
 		var results = new TestResults(passed, failed);
 		if (inputIndex == 4) {
@@ -205,7 +207,8 @@ class AllTests {
 				let f = new TestFailure(params, expected, output);
 				failed.push(this.handleFailure(f));
 			}
-			Logger4Node.cursor.reset();
+			if (AllTests.COLORING_ENABLED)
+				Logger4Node.cursor.reset();
 		}
 		logger.groupEnd();
 		return new TestResults(passed, failed);
@@ -229,13 +232,15 @@ class AllTests {
 	}
 	
 	ok() {
-		Logger4Node.cursor.green().write("✓ \n").reset();
+		if (AllTests.COLORING_ENABLED)
+			Logger4Node.cursor.green().write("✓ \n").reset();
 	}
 
 	handleFailure(testFailure) {
 		let logger4Node = AllTests.logger4Node;
 		let consoleInterceptor = AllTests.consoleInterceptor;
-		Logger4Node.cursor.red().write("✘ ");
+		if (AllTests.COLORING_ENABLED)
+			Logger4Node.cursor.red().write("✘ ");
 		logger4Node.warn("\t=== expected: ===");
 		logger4Node.warn(testFailure.getExpected());
 		logger4Node.warn("\t=== actual: ===");
@@ -256,7 +261,8 @@ class AllTests {
 		}
 		var ok = results.getFailed().length == 0;
 		if (ok)
-			Logger4Node.cursor.green();
+			if (AllTests.COLORING_ENABLED)
+				Logger4Node.cursor.green();
 		logger4Node.log("# Passed: " +passedCount+ '/' +testsCount+ " (" +Math.round(passedCount * 100 / testsCount)+ "%)");
 	}
 }
@@ -283,6 +289,7 @@ AllTests.defineReadOnlyProperty("loggerWithMsDateTimeFormatter", new Logger({
 AllTests.defineReadOnlyProperty("consoleInterceptor", new ConsoleInterceptor());
 
 AllTests.defineReadOnlyProperty("TIMESTAMP_PATTERN_STR",  "\\d{4}-\\d{1,2}-\\d{1,2},? (.* )?\\d{1,2}:\\d{2}:\\d{2}");
+AllTests.defineReadOnlyProperty("COLORING_ENABLED", true);
 
 const GROUP_END_TEST_STRING = "Grouping test: .groupEnd() call passed on OK.";
 const DT_FORMATTER_TEST_MS_SENTINEL = 1588665380753;
