@@ -1,6 +1,6 @@
 {
-  "name": "log4js",
-  "version": "1.0.0",
+  "name": "@adazes/log4js",
+  "version": "1.0.0b1",
   "description": "a simple, very light-weight Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
@@ -14,7 +14,12 @@
     "log4j",
     "console",
     "stdout",
-    "stderr"
+    "stderr",
+    "error",
+    "warn",
+    "info",
+    "debug",
+    "off"
   ],
   "author": "Reşat SABIQ",
   "license": "ISC",
