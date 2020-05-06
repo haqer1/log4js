@@ -308,13 +308,13 @@ Object.defineProperty(Logger.prototype, "logl", {
 			if (!this.isSkippingPrefix() && !this.isSkippingTimestamp()) {
 				var date = new Date();
 				var parenthesesUsed;
-				if (mesaj)
+				if (mesaj) {
 					mesaj += ' ';
-				if (!this.isSkippingName()) {
-					mesaj += '(';
-					parenthesesUsed = true;
-				}
-				if (!mesaj)
+					if (!this.isSkippingName()) {
+						mesaj += '(';
+						parenthesesUsed = true;
+					}
+				} else
 					mesaj = '';
 				var formatter = this.getDateTimeFormatter();
 				// date.toXYZ: needed for esm (even if not targeting IE 9) 
