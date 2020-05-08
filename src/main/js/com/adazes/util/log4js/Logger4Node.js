@@ -37,17 +37,34 @@ Object.defineProperty(Logger4Node, "escSequence", {
 });
 
 Object.defineProperty(Logger4Node, "cursor", {
-	value: {
-		write: function(s) {
-			process.stdout.write(s);
-			return this;
-		},
-		green: Logger4Node.escSequence("[0;32m"),
-		red: Logger4Node.escSequence("[0;31m"),
-		cyan: Logger4Node.escSequence("[0;36m"),
-		darkblue: Logger4Node.escSequence("[0;38;5;25m"),
-		reset: Logger4Node.escSequence("[0m")
+	value: {},
+	enumerable: false, configurable: false, writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "write", {
+	value: function(s) {
+		process.stdout.write(s);
+		return this;
 	},
+	writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "green", {
+	value: Logger4Node.escSequence("[0;32m"),
+	writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "red", {
+	value: Logger4Node.escSequence("[0;31m"),
+	writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "cyan", {
+	value: Logger4Node.escSequence("[0;36m"),
+	writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "darkblue", {
+	value: Logger4Node.escSequence("[0;38;5;25m"),
+	writable: false
+});
+Object.defineProperty(Logger4Node.cursor, "reset", {
+	value: Logger4Node.escSequence("[0m"),
 	writable: false
 });
 
