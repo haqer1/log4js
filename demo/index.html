@@ -21,7 +21,7 @@
 
 			window.onload = function() {
 				loggerWithLevelIndicator.all("All test with Logger with timestamp & level indicator");
-				loggerWithFullPrefix.debug("Debug test with full-prefix Logger (including level indicator) (also showing level indicator being call-specific)");
+				loggerWithFullPrefix.debug("Debug test with full-prefix Logger (including level indicator)");
 				if (loggerWithTimestamp.isInfoEnabled())
 					loggerWithTimestamp.info("Info test w/ named Logger w/ timestamp (with name skipped)");
 				loggerWithTimestampAndName.warn("Warn test w/ named Logger w/ timestamp: a stack-trace will be shown on 2nd line below this 1 (this is just as an example)");

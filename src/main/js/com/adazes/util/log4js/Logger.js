@@ -175,13 +175,15 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 	};
 	if (!config.level)
 		config.level = Level.INFO;
-	if (!config.dateFormatter)
+	if (!config.dateFormatter) {
+		var NUM = "numeric";
 		// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
 		config.dateFormatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
-		  year: 'numeric', month: 'numeric', day: 'numeric',
-		  hour: 'numeric', minute: 'numeric', second: 'numeric',
+		  year: NUM, month: NUM, day: NUM,
+		  hour: NUM, minute: NUM, second: NUM,
 		  hour12: false
 		}) : undefined;
+	}
 
 	this.getName = function() { return config.name }
 	this.getLevel = function() { return config.level }
@@ -355,8 +357,11 @@ Object.defineProperty(Logger.prototype, "logl", {
 
 Object.defineProperty(Logger, "prepareArguments", {
 	value: function(level, params) {
-		var args = [level];
-		Array.prototype.push.apply(args, params);
+		var paramsLength = params != undefined && params.length ? params.length : 0;
+		var args = new Array(paramsLength+1);
+		args[0] = level;
+		for (var i = 0; i < paramsLength; i++)
+			args[i+1] = params[i];		
 		return args;
 	},
 	writable: false
