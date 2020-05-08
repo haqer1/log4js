@@ -16,10 +16,10 @@ import log4js from "log4js";
 ```
 #### Browsers
 ```
-<script src="your/js/include/path/log4js-for-browsers.min.js" type="text/javascript"></script><!-- < 9KB -->
+<script src="your/js/include/path/log4js-for-browsers.min.js" type="text/javascript"></script> <!-- a bit < 7KB -->
 ```
 
-### Using (Node.js & Browsers)
+### Using (both (Node.js & Browsers))
 ```javascript
 var logger = new log4js.Logger("Demo", 
 	log4js.Level.WARN,  // Level.OFF can also be used to turn logging off completely

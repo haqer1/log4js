@@ -7,7 +7,9 @@ import replace from 'rollup-plugin-re';
 
 const ARTIFACT_NAME = "log4js";
 const JS_EXT = ".js";
-const INDEX_JS = "src/main/js/index" +JS_EXT;
+const SRC_DIR = "src/main/js/";
+const INDEX_JS = SRC_DIR + "index" +JS_EXT;
+const INDEX_FOR_BROWSERS_JS = SRC_DIR + "com/adazes/util/log4js/Logger" +JS_EXT;
 const FOR_BROWSERS_SUFFIX = "-for-browsers";
 const MIN_JS_EXT = ".min" +JS_EXT;
 export default [
@@ -29,7 +31,7 @@ export default [
     plugins: [commonjs(), nodeBuiltins()]
 },
 {
-    input: INDEX_JS,
+    input: INDEX_FOR_BROWSERS_JS,
     output: [
       {
         file: "dist/" + ARTIFACT_NAME + FOR_BROWSERS_SUFFIX + JS_EXT,
