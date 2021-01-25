@@ -245,44 +245,22 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 
 	this.functionForLevel = function(messageLevel) {
 		var fn;
-		switch (messageLevel) {
-		case Level.FATAL:
-		case Level.ERROR:
-			if (Logger.CONSOLE_ERROR_AVAILABLE)
-				fn = console.error;
-			break;
-		case Level.WARN:
-			fn = Logger.CONSOLE_WARN_AVAILABLE ? console.warn : console.error;
-			break;
-		case Level.INFO:
-			fn = console.info;
-			break;
-		case Level.DEBUG:
-		case Level.ALL:
-			if (Logger.CONSOLE_DEBUG_AVAILABLE)
-				fn = console.debug;
-			break;
-		case Level.TRACE:
-			fn = console.trace;
-		}
+		if (messageLevel == Level.FATAL || messageLevel == Level.ERROR)
+			fn = console.error
+		else if (messageLevel == Level.WARN)
+			fn = console.warn
+		else if (messageLevel == Level.INFO)
+			fn = console.info
+		else if (messageLevel == Level.DEBUG || messageLevel == Level.ALL)
+			fn = console.debug
+		else if (messageLevel == Level.TRACE)
+			fn = console.trace
 		if (!fn) 
-			fn = console.log;
+			fn = console.log
 		return fn
 	}
 };
 
-Object.defineProperty(Logger, "CONSOLE_ERROR_AVAILABLE", {
-	value:  console.error? true : false,
-	writable: false
-});
-Object.defineProperty(Logger, "CONSOLE_WARN_AVAILABLE", {
-	value:  console.warn ? true : false,
-	writable: false
-});
-Object.defineProperty(Logger, "CONSOLE_DEBUG_AVAILABLE", {
-	value:  console.debug ? true : false,
-	writable: false
-});
 Object.defineProperty(Logger, "ENV_NAVIGATOR", {
 	value:  typeof(navigator) == "object",
 	writable: false
