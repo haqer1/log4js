@@ -16,7 +16,7 @@ import log4js from "log4js";
 ```
 #### Browsers
 ```
-<script src="your/js/include/path/log4js-for-browsers.min.js" type="text/javascript"></script> <!-- a bit < 7KB -->
+<script src="your/js/include/path/log4js-for-browsers.min.js" type="text/javascript"></script> <!-- 6.6KB -->
 ```
 
 ### Using (both (Node.js & Browsers))
