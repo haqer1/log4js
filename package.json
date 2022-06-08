@@ -1,11 +1,15 @@
 {
   "name": "@adazes/log4js",
-  "version": "1.0.0b1",
+  "version": "1.0.0",
   "description": "a simple, very light-weight Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "test": "node -r esm src/test/js/com/adazes/util/log4js/AllTests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haqer1/log4js.git"
   },
   "keywords": [
     "log",
@@ -31,5 +35,9 @@
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-uglify": "^6.0.4"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/haqer1/log4js/issues"
+  },
+  "homepage": "https://github.com/haqer1/log4js#readme"
 }
