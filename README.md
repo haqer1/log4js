@@ -5,14 +5,14 @@ A simple, very light-weight Logger implementation for JS (inspired by log4j)
 ## Installation
 
 ```
-npm i --save-dev log4js
+npm i --save-dev @adazes/log4js
 ```
 
 ## Usage
 ### Importing
 #### Node.js
 ```javascript
-import log4js from "log4js";
+import * as log4js from "@adazes/log4js";
 ```
 #### Browsers
 ```
@@ -27,11 +27,12 @@ var logger = new log4js.Logger("Demo",
 if (logger.isInfoEnabled())
 	logger.info("This isn't logged since level is higher than threshold set");
 
-var logger2 = new Logger({
+var logger2 = new log4js.Logger({
 	name: "Logger initialized with a config object",
-	level: Level.ALL,
+	level: log4js.Level.ALL,
 	useLevelAbbreviation: true});
 logger2.all("This is logged");
+// A> Logger initialized with a config object (2022-6-10, 14:14:30): This is logged
 ```
 
 ### Config object usable during construction (with default values indicated)
@@ -50,4 +51,4 @@ logger2.all("This is logged");
 	}
 }
 ```
-These same settings can be passed in, in this exact order, as individual constructor parameters, which frequently results in less typing.
+These same settings can be passed in, in this exact order, as individual constructor parameters, which frequently results in less typing. See `var logger` for an example in [Using](### Using (both (Node.js & Browsers))) section above.
