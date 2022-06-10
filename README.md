@@ -52,3 +52,6 @@ logger2.all("This is logged");
 }
 ```
 These same settings can be passed in, in this exact order, as individual constructor parameters, which frequently results in less typing. See `var logger` for an example in [Using](#using-both-nodejs--browsers) section above.
+
+## Demo
+Feel free to take a look at the [demo](https://rawgit.com/haqer1/log4js/master/demo/index.html) for live examples of logging code & messages logged in browser console.
