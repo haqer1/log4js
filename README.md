@@ -51,4 +51,4 @@ logger2.all("This is logged");
 	}
 }
 ```
-These same settings can be passed in, in this exact order, as individual constructor parameters, which frequently results in less typing. See `var logger` for an example in [Using](### Using (both (Node.js & Browsers))) section above.
+These same settings can be passed in, in this exact order, as individual constructor parameters, which frequently results in less typing. See `var logger` for an example in [Using](#using-both-nodejs--browsers) section above.
