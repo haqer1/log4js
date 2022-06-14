@@ -55,3 +55,10 @@ These same settings can be passed in, in this exact order, as individual constru
 
 ## Demo
 Feel free to take a look at the [demo](https://rawgit.com/haqer1/log4js/master/demo/index.html) for live examples of logging code & messages logged in browser console.
+
+## Automated testing
+```
+git clone https://github.com/haqer1/log4js.git
+cd log4js
+npm run test
+```
