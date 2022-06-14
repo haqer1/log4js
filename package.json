@@ -1,6 +1,6 @@
 {
   "name": "@adazes/log4js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "a simple, very light-weight Logger implementation for JS (inspired by log4j)",
   "main": "src/main/js/index.js",
   "scripts": {
