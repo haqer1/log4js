@@ -181,7 +181,7 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 			var NUM = "numeric";
 			// The following used to work, but no longer does: navigator.language+ "-u-ca-iso8601"
 			// Instead now using this pretty good sentinel for ISO8601:
-			let iso8601LocaleSentinel = "sv-SE";
+			var iso8601LocaleSentinel = "sv-SE";
 			/* It seems date formatting used to default to ISO8601 in esm, e.g. in node 12.
 			 * Since node 16, it seems to default to en(-US), therefore, define custom formatter
 			 * unconditionally: */
