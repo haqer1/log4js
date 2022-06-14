@@ -60,5 +60,6 @@ Feel free to take a look at the [demo](https://rawgit.com/haqer1/log4js/master/d
 ```
 git clone https://github.com/haqer1/log4js.git
 cd log4js
+npm install
 npm run test
 ```
