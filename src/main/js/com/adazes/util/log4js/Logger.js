@@ -179,12 +179,19 @@ var Logger = function(configOrName, loggingLevel, skipPrefix, skipTimestamp, ski
 			config.level = Level.INFO;
 		if (!config.dateFormatter) {
 			var NUM = "numeric";
-			// TODO: since min. IE supported is 11, formatter is going to be defined on all browsers, but currently not in esm used for testing:
-			config.dateFormatter = Logger.ENV_NAVIGATOR ? new Intl.DateTimeFormat(navigator.language+ "-u-ca-iso8601", { // iso8601: 2017-11-07
-			  year: NUM, month: NUM, day: NUM,
-			  hour: NUM, minute: NUM, second: NUM,
-			  hour12: false
-			}) : undefined;
+			// The following used to work, but no longer does: navigator.language+ "-u-ca-iso8601"
+			// Instead now using this pretty good sentinel for ISO8601:
+			let iso8601LocaleSentinel = "sv-SE";
+			/* It seems date formatting used to default to ISO8601 in esm, e.g. in node 12.
+			 * Since node 16, it seems to default to en(-US), therefore, define custom formatter
+			 * unconditionally: */
+			config.dateFormatter = new Intl.DateTimeFormat(
+				iso8601LocaleSentinel, { // iso8601: 2017-11-07
+					year: NUM, month: NUM, day: NUM,
+					hour: NUM, minute: NUM, second: NUM,
+					hour12: false
+				}
+			)
 		}
 	}
 	construct();
